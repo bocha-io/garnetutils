@@ -7,29 +7,6 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-const (
-	defaultKey = "value"
-	configName = "config"
-	schemaName = "schema"
-	tablesName = "tables"
-	enumsName  = "enums"
-)
-
-type Field struct {
-	Key  string
-	Type string
-}
-
-type Table struct {
-	Key    string
-	Values []Field
-}
-
-type Enum struct {
-	Key    string
-	Values []string
-}
-
 func GetTablesFromJSON(mudConfigJSON []byte) []Table {
 	tables := []Table{}
 	err := jsonparser.ObjectEach(mudConfigJSON, func(key []byte, value []byte, dataType jsonparser.ValueType, offset int) error {
@@ -38,7 +15,7 @@ func GetTablesFromJSON(mudConfigJSON []byte) []Table {
 				Key: string(key),
 				Values: []Field{
 					{
-						Key:  defaultKey,
+						Key:  defaultKeyForField,
 						Type: string(value),
 					},
 				},
