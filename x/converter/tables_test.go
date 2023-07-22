@@ -83,10 +83,11 @@ func TestTablesGeneration(t *testing.T) {
 
 	tableProjectil := Table{
 		Key: "Projectil",
-		Values: []Field{{
-			Key:  "spawned",
-			Type: "bool",
-		},
+		Values: []Field{
+			{
+				Key:  "spawned",
+				Type: "bool",
+			},
 			{
 				Key:  "x",
 				Type: "int32",
@@ -131,7 +132,6 @@ func TestTablesGeneration(t *testing.T) {
 			if tables[k].Values[i] != tablesRes[k].Values[i] {
 				t.Fatalf("table values are different")
 			}
-
 		}
 	}
 }
@@ -162,7 +162,6 @@ func TestEnmusGeneration(t *testing.T) {
 			if enums[k].Values[i] != enumsRes[k].Values[i] {
 				t.Fatalf("enums values are different")
 			}
-
 		}
 	}
 }
