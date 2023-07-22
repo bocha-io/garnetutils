@@ -120,7 +120,17 @@ func TestTablesGeneration(t *testing.T) {
 		},
 	}
 
-	tablesRes := []Table{tableMatch, tablePlayerTwo, tableUser, tableCurrentGameState, tableCurrentHp, tableInmune, tableTime, tableProjectil, tablePosition}
+	tablesRes := []Table{
+		tableMatch,
+		tablePlayerTwo,
+		tableUser,
+		tableCurrentGameState,
+		tableCurrentHp,
+		tableInmune,
+		tableTime,
+		tableProjectil,
+		tablePosition,
+	}
 	if len(tablesRes) != len(tables) {
 		t.Fatalf("incorrect table len")
 	}
