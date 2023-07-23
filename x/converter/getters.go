@@ -24,14 +24,14 @@ func (c Converter) MultiValueTable(tableName string, tables []Field) string {
 	goFields := []string{}
 	for _, v := range tables {
 		// Uint, Int and Enums will return int64 in go
-		goType := "int64"
+		goType := int64Type
 		var tempReturn string
 		switch v.Type {
-		case "bytes32":
-			goType = "string"
+		case bytes32Type:
+			goType = stringType
 			tempReturn = "\"\""
-		case "bool":
-			goType = "bool"
+		case boolType:
+			goType = boolType
 			tempReturn = "false"
 		default:
 			tempReturn = "0"
@@ -54,7 +54,7 @@ func (c Converter) MultiValueTable(tableName string, tables []Field) string {
 		// List to iterate and get fields
 		goFields = append(goFields, goType)
 	}
-	returnValues = returnValues + ", error)"
+	returnValues += ", error)"
 
 	firstLine := fmt.Sprintf(`func (g *%s) get%s(key string) %s {`, c.mainStruct, tableName, returnValues)
 	getValues := fmt.Sprintf(`
@@ -74,19 +74,19 @@ func (c Converter) MultiValueTable(tableName string, tables []Field) string {
 	validReturn := ""
 	for k, v := range goFields {
 		switch v {
-		case "int64":
+		case int64Type:
 			getters = fmt.Sprintf(`%s
     field%d, err := strconv.ParseInt(fields[%d].Data.String(), 10, 32)
     if err != nil {
         return %s, err
     }`, getters, k, k, errorReturn)
 
-		case "bool":
+		case boolType:
 			getters = fmt.Sprintf(`%s
     field%d := fields[%d].Data.String() == "true"`,
 				getters, k, k)
 
-		case "string":
+		case stringType:
 			getters = fmt.Sprintf(`%s
     field%d := strings.ReplaceAll(fileds[%d].Data.String(), "\"", "")`,
 				getters, k, k)
