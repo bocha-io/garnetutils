@@ -56,7 +56,12 @@ func (c Converter) MultiValueTable(tableName string, tables []Field) string {
 	}
 	returnValues += ", error)"
 
-	firstLine := fmt.Sprintf(`func (g *%s) get%s(key string) %s {`, c.mainStruct, tableName, returnValues)
+	firstLine := fmt.Sprintf(
+		`func (g *%s) get%s(key string) %s {`,
+		c.mainStruct,
+		tableName,
+		returnValues,
+	)
 	getValues := fmt.Sprintf(`
     fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
     if err != nil {
