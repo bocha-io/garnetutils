@@ -6,21 +6,7 @@ import (
 	"strings"
 )
 
-func GenerateFiles(mainStruct string, mudConfig []byte, path string) []string {
-	if path == "" {
-		path = "/Users/hanchon/devel/bocha-io/transpiler/x/garnethelpers/"
-	}
-
-	if path[len(path)-1] != '/' {
-		path += "/"
-	}
-
-	// Convert to JSON
-	jsonFile := MudConfigToJSON(mudConfig)
-	// Tables
-	tables := GetTablesFromJSON(jsonFile)
-
-	c := Converter{mainStruct: mainStruct}
+func CreateGettersString(tables []Table, c Converter) string {
 	functionsString := ""
 	// Getters
 	for _, v := range tables {
@@ -45,10 +31,50 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) []string {
 
 	gettersFile += functionsString
 
-	gettersFile = strings.ReplaceAll(gettersFile, "    ", "\t")
-	_ = os.WriteFile(path+"getters.go", []byte(gettersFile), 0644)
+	return strings.ReplaceAll(gettersFile, "    ", "\t")
+}
 
-	fmt.Println(gettersFile)
+func CreateEventsString(tables []Table, c Converter) string {
+	eventsString := ""
+	// Events
+	for _, v := range tables {
+		eventsString += fmt.Sprintf("\n%s", c.CreateEventFunction(v.Key, v.Values))
+	}
+
+	eventsFile := "package garnethelpers\n\nimport (\n"
+
+	if strings.Contains(eventsString, "big.") {
+		eventsFile += "\t\"math/big\"\n"
+	}
+
+	eventsFile += "\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)"
+
+	eventsFile += eventsString
+
+	return strings.ReplaceAll(eventsFile, "    ", "\t")
+}
+
+func GenerateFiles(mainStruct string, mudConfig []byte, path string) []string {
+	if path == "" {
+		path = "/Users/hanchon/devel/bocha-io/transpiler/x/garnethelpers/"
+	}
+
+	if path[len(path)-1] != '/' {
+		path += "/"
+	}
+
+	// Convert to JSON
+	jsonFile := MudConfigToJSON(mudConfig)
+	// Tables
+	tables := GetTablesFromJSON(jsonFile)
+
+	c := Converter{mainStruct: mainStruct}
+
+	gettersString := CreateGettersString(tables, c)
+	_ = os.WriteFile(path+"getters.go", []byte(gettersString), 0644)
+
+	eventsString := CreateEventsString(tables, c)
+	_ = os.WriteFile(path+"setters.go", []byte(eventsString), 0644)
 
 	return []string{""}
 }

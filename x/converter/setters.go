@@ -21,10 +21,10 @@ func (c *Converter) CreateEventFunction(tableName string, fields []Field) string
 	}
 
 	firstLine := fmt.Sprintf(`
-func create%sEvent(ID string, %s) data.MudEvent {
+func Create%sEvent(ID string, %s) data.MudEvent {
     return data.MudEvent{
         Table: "%s",
-        Key: ID,
+        Key:   ID,
         Fields: []data.Field{`, tableName, returnValues, tableName)
 
 	fieldsEvents := "\n"
@@ -33,13 +33,13 @@ func create%sEvent(ID string, %s) data.MudEvent {
 		dataString := fmt.Sprintf(`data.UintField{Data: *big.NewInt(%s)}`, v.Key)
 		switch v.Type {
 		case bytes32Type:
-			dataString = fmt.Sprintf(`data.NewBytesField(%s)}`, v.Key)
+			dataString = fmt.Sprintf(`data.NewBytesField(%s)`, v.Key)
 		case boolType:
 			dataString = fmt.Sprintf(`data.BoolField{Data: %s}`, v.Key)
 		}
 		fieldsEvents += fmt.Sprintf("            {Key: \"%s\", Data: %s},\n", v.Key, dataString)
 	}
-	fieldsEvents += "        },\n    },"
+	fieldsEvents += "        },\n    }"
 
 	return fmt.Sprintf("%s%s\n}", firstLine, fieldsEvents)
 }
