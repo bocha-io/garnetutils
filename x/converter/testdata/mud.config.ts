@@ -23,7 +23,7 @@ export default mudConfig({
     CurrentHp: "uint32",
     Inmune: "uint32",
     Time: "uint32",
-    Projectil: {
+    Projectile: {
         dataStruct:false,
         schema:{
             spawned:"bool",

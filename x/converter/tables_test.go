@@ -81,8 +81,8 @@ func TestTablesGeneration(t *testing.T) {
 		},
 	}
 
-	tableProjectil := Table{
-		Key: "Projectil",
+	tableProjectile := Table{
+		Key: "Projectile",
 		Values: []Field{
 			{
 				Key:  "spawned",
@@ -128,7 +128,7 @@ func TestTablesGeneration(t *testing.T) {
 		tableCurrentHp,
 		tableInmune,
 		tableTime,
-		tableProjectil,
+		tableProjectile,
 		tablePosition,
 	}
 	if len(tablesRes) != len(tables) {
