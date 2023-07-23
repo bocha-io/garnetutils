@@ -6,6 +6,25 @@ import (
 	"strings"
 )
 
+func CreateTypesString() string {
+	return `package garnethelpers
+
+import "github.com/bocha-io/garnet/x/indexer/data"
+
+type GameState struct {
+	db    *data.Database
+	world *data.World
+}
+
+func NewGameState(db *data.Database) *GameState {
+	return &GameState{
+		db:    db,
+		world: db.GetDefaultWorld(),
+	}
+}
+`
+}
+
 func CreateGettersString(tables []Table, c Converter) string {
 	functionsString := ""
 	// Getters
@@ -54,7 +73,7 @@ func CreateEventsString(tables []Table, c Converter) string {
 	return strings.ReplaceAll(eventsFile, "    ", "\t")
 }
 
-func GenerateFiles(mainStruct string, mudConfig []byte, path string) []string {
+func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	if path == "" {
 		path = "/Users/hanchon/devel/bocha-io/transpiler/x/garnethelpers/"
 	}
@@ -71,10 +90,18 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) []string {
 	c := Converter{mainStruct: mainStruct}
 
 	gettersString := CreateGettersString(tables, c)
-	_ = os.WriteFile(path+"getters.go", []byte(gettersString), 0644)
+	if err := os.WriteFile(path+"getters.go", []byte(gettersString), 0644); err != nil {
+		return err
+	}
 
 	eventsString := CreateEventsString(tables, c)
-	_ = os.WriteFile(path+"setters.go", []byte(eventsString), 0644)
+	if err := os.WriteFile(path+"setters.go", []byte(eventsString), 0644); err != nil {
+		return err
+	}
 
-	return []string{""}
+	if err := os.WriteFile(path+"types.go", []byte(CreateTypesString()), 0644); err != nil {
+		return err
+	}
+
+	return nil
 }
