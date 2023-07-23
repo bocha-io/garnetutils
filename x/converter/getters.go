@@ -18,11 +18,11 @@ func (c Converter) SingleValueInt(tableName string) string {
 }`, c.mainStruct, tableName, tableName)
 }
 
-func (c Converter) MultiValueTable(tableName string, tables []Field) string {
+func (c Converter) MultiValueTable(tableName string, fields []Field) string {
 	errorReturn := ""
 	returnValues := "("
 	goFields := []string{}
-	for _, v := range tables {
+	for _, v := range fields {
 		// Uint, Int and Enums will return int64 in go
 		goType := int64Type
 		var tempReturn string
@@ -73,7 +73,7 @@ func (c Converter) MultiValueTable(tableName string, tables []Field) string {
     if len(fields) != %d {
         return %s, fmt.Errorf("invalid amount of fields")
     }`,
-		len(tables), errorReturn)
+		len(fields), errorReturn)
 
 	getters := ""
 	validReturn := ""
