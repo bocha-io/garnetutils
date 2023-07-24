@@ -1,28 +1,29 @@
 package converter
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func CreateTypesString() string {
-	return `package garnethelpers
+func CreateTypesString(mainStruct string) string {
+	return fmt.Sprintf(`package garnethelpers
 
 import "github.com/bocha-io/garnet/x/indexer/data"
 
-type GameState struct {
+type %s struct {
 	db    *data.Database
 	world *data.World
 }
 
-func NewGameState(db *data.Database) *GameState {
+func New%s(db *data.Database) *GameState {
 	return &GameState{
 		db:    db,
 		world: db.GetDefaultWorld(),
 	}
 }
-`
+`, mainStruct, mainStruct)
 }
 
 func CreateGettersString(tables []Table, c Converter) string {
@@ -75,11 +76,18 @@ func CreateEventsString(tables []Table, c Converter) string {
 
 func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	if path == "" {
-		path = "/Users/hanchon/devel/bocha-io/transpiler/x/garnethelpers/"
+		path = "/Users/hanchon/devel/bocha-io/garnetutils/x/garnethelpers/"
 	}
 
 	if path[len(path)-1] != '/' {
 		path += "/"
+	}
+
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Convert to JSON
@@ -99,5 +107,5 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 		return err
 	}
 
-	return os.WriteFile(path+"types.go", []byte(CreateTypesString()), 0o600)
+	return os.WriteFile(path+"types.go", []byte(CreateTypesString(c.mainStruct)), 0o600)
 }
