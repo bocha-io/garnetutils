@@ -1,11 +1,10 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
-package cmd
+*/package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/bocha-io/garnetutils/x/converter"
 	"github.com/spf13/cobra"
@@ -29,7 +28,7 @@ var generateCmd = &cobra.Command{
 			return
 		}
 
-		mudConfigFile, err := ioutil.ReadFile(input)
+		mudConfigFile, err := os.ReadFile(input)
 		if err != nil {
 			fmt.Printf("error opening the file: %s\n", err.Error())
 			return
@@ -52,6 +51,8 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	generateCmd.Flags().StringP("input", "i", "./mud.config.ts", "Input: Path to your mud.config.ts file.")
-	generateCmd.Flags().StringP("output", "o", "/tmp/garnetgenerated/", "Output: Path to the output folder.")
+	generateCmd.Flags().
+		StringP("input", "i", "./mud.config.ts", "Input: Path to your mud.config.ts file.")
+	generateCmd.Flags().
+		StringP("output", "o", "/tmp/garnetgenerated/", "Output: Path to the output folder.")
 }
