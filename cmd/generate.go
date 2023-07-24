@@ -1,6 +1,4 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/package cmd
+package cmd
 
 import (
 	"fmt"
@@ -10,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generates the getters, events and types go files based on your MUD config",
