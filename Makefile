@@ -6,3 +6,8 @@ lint:
 test:
 	@go test -v ./...
 
+clean:
+	@rm x/garnethelpers/*.go
+
+fix-lines:
+	@golines -w .

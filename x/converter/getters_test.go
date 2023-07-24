@@ -55,8 +55,9 @@ func (g *GameState) getProjectile(key string) (bool, int64, int64, string, error
     if err != nil {
         return false, 0, 0, "", err
     }
-    field3 := strings.ReplaceAll(fileds[3].Data.String(), "\"", "")
-return field0, field1, field2, field3, nil`
+    field3 := strings.ReplaceAll(fields[3].Data.String(), "\"", "")
+    return field0, field1, field2, field3, nil
+}`
 
 	if generated != value {
 		t.Fatalf("multivalue failed: %s, %s", generated, value)

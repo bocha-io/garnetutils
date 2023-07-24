@@ -93,7 +93,7 @@ func (c Converter) MultiValueTable(tableName string, fields []Field) string {
 
 		case stringType:
 			getters = fmt.Sprintf(`%s
-    field%d := strings.ReplaceAll(fileds[%d].Data.String(), "\"", "")`,
+    field%d := strings.ReplaceAll(fields[%d].Data.String(), "\"", "")`,
 				getters, k, k)
 		}
 
@@ -104,7 +104,7 @@ func (c Converter) MultiValueTable(tableName string, fields []Field) string {
 		}
 
 	}
-	validReturn = fmt.Sprintf("return %s, nil", validReturn)
+	validReturn = fmt.Sprintf("    return %s, nil\n}", validReturn)
 
 	return fmt.Sprintf(`
 %s
