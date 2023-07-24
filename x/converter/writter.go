@@ -90,18 +90,14 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	c := Converter{mainStruct: mainStruct}
 
 	gettersString := CreateGettersString(tables, c)
-	if err := os.WriteFile(path+"getters.go", []byte(gettersString), 0644); err != nil {
+	if err := os.WriteFile(path+"getters.go", []byte(gettersString), 0o600); err != nil {
 		return err
 	}
 
 	eventsString := CreateEventsString(tables, c)
-	if err := os.WriteFile(path+"setters.go", []byte(eventsString), 0644); err != nil {
+	if err := os.WriteFile(path+"setters.go", []byte(eventsString), 0o600); err != nil {
 		return err
 	}
 
-	if err := os.WriteFile(path+"types.go", []byte(CreateTypesString()), 0644); err != nil {
-		return err
-	}
-
-	return nil
+	return os.WriteFile(path+"types.go", []byte(CreateTypesString()), 0o600)
 }
