@@ -8,3 +8,6 @@ test:
 
 clean:
 	@rm x/garnethelpers/*.go
+
+fix-lines:
+	@golines -w .
