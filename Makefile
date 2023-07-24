@@ -14,3 +14,9 @@ clean:
 
 fix-lines:
 	@golines -w .
+
+release-dry:
+	@goreleaser release --snapshot --clean
+
+release:
+	@goreleaser release
