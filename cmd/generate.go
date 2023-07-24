@@ -41,9 +41,12 @@ var generateCmd = &cobra.Command{
 			return
 		}
 
-		converter.GenerateFiles("GameObject", mudConfigFile, output)
+		err = converter.GenerateFiles("GameObject", mudConfigFile, output)
+		if err != nil {
+			fmt.Printf("error generating files: %s", err.Error())
+		}
 
-		fmt.Printf("files generated at %s", output)
+		fmt.Printf("files generated at %s\n", output)
 	},
 }
 

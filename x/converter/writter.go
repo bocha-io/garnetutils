@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -80,6 +81,13 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 
 	if path[len(path)-1] != '/' {
 		path += "/"
+	}
+
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		err := os.Mkdir(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Convert to JSON
