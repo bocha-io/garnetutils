@@ -9,8 +9,9 @@ import (
 var ticFile []byte
 
 func TestAST(t *testing.T) {
-	err := ProcessAST(ticFile)
-	if err == nil {
-		t.Fatal()
-	}
+	_ = ProcessAST(ticFile)
+	t.Fatal()
+	// if err == nil {
+	// 	t.Fatal()
+	// }
 }
