@@ -212,6 +212,18 @@ func processFunctionDefinition(data []byte) (string, error) {
 	}
 	ret += " (" + parametersString + ") "
 
+	// Returns
+	returns, _, _, err := jsonparser.Get(data, "returnParameters")
+	if err != nil {
+		return "", err
+	}
+
+	returnsString, err := processNodeType(returns)
+	if err != nil {
+		return "", err
+	}
+	ret += " (" + returnsString + ") {"
+
 	// Function body
 	body, _, _, err := jsonparser.Get(data, "body")
 	if err != nil {
@@ -232,6 +244,9 @@ func processFunctionDefinition(data []byte) (string, error) {
 	if err != nil {
 		return "", nil
 	}
+
+	// Close function
+	ret += "\n}"
 	return ret, nil
 }
 
