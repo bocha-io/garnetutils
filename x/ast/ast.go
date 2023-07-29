@@ -255,7 +255,11 @@ func ProcessAST(data []byte) error {
 
 		case contractDefinition:
 			// processContractDefinition(v)
-			a, _ := processNodeType(v)
+			a, err := processNodeType(v)
+			if err != nil {
+				fmt.Println(err)
+				panic("")
+			}
 			fmt.Println("----")
 			fmt.Println(a)
 			definition = v

@@ -18,10 +18,14 @@ const (
 
 	VariableDeclaration = "VariableDeclaration"
 	ElementaryTypeName  = "ElementaryTypeName"
+
+	FunctionCall = "FunctionCall"
+	MemberAccess = "MemberAccess"
 )
 
 const (
 	Identifier = "Identifier"
+	Literal    = "Literal"
 )
 
 // Operators
@@ -29,6 +33,7 @@ const (
 	OperatorAnd = "&&"
 	OperatorGE  = ">="
 	OperatorAdd = "+"
+	OperatorMul = "*"
 )
 
 func getNodeType(data []byte) (string, error) {
@@ -44,7 +49,7 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 			// isConstant, err := jsonparser.GetBoolean(value, "constant")
 			name, err := jsonparser.GetString(value, "name")
 			typeName, err := jsonparser.GetString(value, "typeName", "name")
-			declarations = append(declarations, fmt.Sprintf("var %s %s", typeName, name))
+			declarations = append(declarations, fmt.Sprintf("%s %s", typeName, name))
 		},
 		"declarations",
 	)
@@ -64,13 +69,20 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 			return "", err
 		}
 
-		ret := ""
-		for k, v := range declarations {
-			ret += v + " = " + value
-			if k != len(declarations)-1 {
-				ret += "\n"
+		ret := declarations[0]
+		// if there is more than one declaration, it's a tuple
+		if len(declarations) > 1 {
+			ret = "("
+			for k, v := range declarations {
+				ret += v
+				if k != len(declarations)-1 {
+					ret += ", "
+				}
 			}
+			ret += ")"
 		}
+
+		ret += " := " + value
 		return ret, nil
 	}
 
@@ -118,6 +130,12 @@ func processBinaryOperation(data []byte) (string, error) {
 		return left + " " + operator + " " + right, nil
 
 	case OperatorAdd:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+	case OperatorMul:
 		left, right, err := processBranches(data)
 		if err != nil {
 			return "", err
@@ -293,9 +311,143 @@ func processParameterList(data []byte) (string, error) {
 
 }
 
+func processFunctionCall(data []byte) (string, error) {
+	kind, err := jsonparser.GetString(data, "kind")
+	if err != nil {
+		return "", err
+	}
+	if kind == "typeConversion" {
+		// nodeType: ElementaryTypeNameExpression
+		// arguments
+		arguments := []string{}
+		_, err := jsonparser.ArrayEach(
+			data,
+			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+				argument, err := processNodeType(value)
+				if err != nil {
+					return
+				}
+				// // isConstant, err := jsonparser.GetBoolean(value, "constant")
+				// name, err := jsonparser.GetString(value, "name")
+				// typeName, err := jsonparser.GetString(value, "typeName", "name")
+				arguments = append(arguments, argument)
+			},
+			"arguments",
+		)
+
+		if err != nil {
+			return "", nil
+		}
+
+		ret := "("
+		for k, v := range arguments {
+			ret += v
+			if k != len(arguments)-1 {
+				ret += ", "
+			}
+		}
+		ret += ")"
+
+		// expression
+		val, err := jsonparser.GetString(data, "expression", "nodeType")
+		if err != nil {
+			return "", err
+		}
+
+		funcType := ""
+		if val == "ElementaryTypeNameExpression" {
+			funcType, err = jsonparser.GetString(data, "expression", "typeName", "name")
+			if err != nil {
+				return "", err
+			}
+		}
+
+		// // something like int32(123)
+		// newType, err := jsonparser.GetString(data, "typeDescriptions", "typeString")
+		// if err != nil {
+		// 	return "", err
+		// }
+
+		return funcType + ret, nil
+	} else if kind == "functionCall" {
+		// arguments
+		arguments := []string{}
+		_, err := jsonparser.ArrayEach(
+			data,
+			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+				argument, err := processNodeType(value)
+				if err != nil {
+					return
+				}
+				arguments = append(arguments, argument)
+			},
+			"arguments",
+		)
+
+		if err != nil {
+			return "", err
+		}
+
+		ret := ""
+		if len(arguments) > 0 {
+			ret = "("
+			for k, v := range arguments {
+				ret += v
+				if k != len(arguments)-1 {
+					ret += ", "
+				}
+			}
+			ret += ")"
+		}
+
+		// expression
+		expressionObject, _, _, err := jsonparser.Get(data, "expression")
+		if err != nil {
+			return "", err
+		}
+		expression, err := processNodeType(expressionObject)
+		if err != nil {
+			return "", err
+		}
+		return expression + ret, nil
+	}
+
+	return "", fmt.Errorf("%s function kind not processed", kind)
+}
+
 // func processElementaryTypeName(data []byte) (string, error) {
 // 	return jsonparser.GetString(data, "name")
 // }
+
+func processLiteral(data []byte) (string, error) {
+	kind, err := jsonparser.GetString(data, "kind")
+	if err != nil {
+		return "", err
+	}
+	if kind == "number" {
+		return jsonparser.GetString(data, "value")
+	}
+	return "", fmt.Errorf("%s literal not parsed", err)
+}
+
+func processMemberAccess(data []byte) (string, error) {
+	member, err := jsonparser.GetString(data, "memberName")
+	if err != nil {
+		return "", err
+	}
+
+	expressionObject, _, _, err := jsonparser.Get(data, "expression")
+	if err != nil {
+		return "", err
+	}
+
+	expression, err := processNodeType(expressionObject)
+	if err != nil {
+		return "", err
+	}
+
+	return expression + "." + member, nil
+}
 
 func processNodeType(data []byte) (string, error) {
 	// fmt.Println("processing node type", string(data))
@@ -321,6 +473,13 @@ func processNodeType(data []byte) (string, error) {
 		return processFunctionDefinition(data)
 	case ParameterList:
 		return processParameterList(data)
+	case FunctionCall:
+		return processFunctionCall(data)
+	case Literal:
+		return processLiteral(data)
+	case MemberAccess:
+		return processMemberAccess(data)
+
 	// case VariableDeclaration:
 	// 	return processVariableDeclaration(data)
 	// case ElementaryTypeName:
