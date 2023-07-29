@@ -21,6 +21,11 @@ const (
 
 	FunctionCall = "FunctionCall"
 	MemberAccess = "MemberAccess"
+
+	IfStatement = "IfStatement"
+
+	ExpressionStatement = "ExpressionStatement"
+	Assignment          = "Assignment"
 )
 
 const (
@@ -32,8 +37,12 @@ const (
 const (
 	OperatorAnd = "&&"
 	OperatorGE  = ">="
+	OperatorLE  = "<="
 	OperatorAdd = "+"
+	OperatorSub = "-"
 	OperatorMul = "*"
+	OperatorL   = "<"
+	OperatorG   = ">"
 )
 
 func getNodeType(data []byte) (string, error) {
@@ -129,7 +138,20 @@ func processBinaryOperation(data []byte) (string, error) {
 		}
 		return left + " " + operator + " " + right, nil
 
+	case OperatorLE:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+
 	case OperatorAdd:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+	case OperatorSub:
 		left, right, err := processBranches(data)
 		if err != nil {
 			return "", err
@@ -141,6 +163,19 @@ func processBinaryOperation(data []byte) (string, error) {
 			return "", err
 		}
 		return left + " " + operator + " " + right, nil
+	case OperatorL:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+	case OperatorG:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+
 	}
 
 	return "", nil
@@ -449,6 +484,65 @@ func processMemberAccess(data []byte) (string, error) {
 	return expression + "." + member, nil
 }
 
+func processIfStatement(data []byte) (string, error) {
+	ret := "if "
+	// condition
+
+	conditionObject, _, _, err := jsonparser.Get(data, "condition")
+	if err != nil {
+		return "", err
+	}
+	condition, err := processNodeType(conditionObject)
+
+	ret += condition + " {\n"
+
+	// true
+	trueBodyObject, _, _, err := jsonparser.Get(data, "trueBody")
+	if err != nil {
+		return "", err
+	}
+	trueBody, err := processNodeType(trueBodyObject)
+	ret += trueBody
+	ret += "\n}"
+
+	// false
+	// TODO: false branch
+
+	return ret, err
+}
+
+func processExpressionStatement(data []byte) (string, error) {
+	expression, _, _, err := jsonparser.Get(data, "expression")
+	if err != nil {
+		return "", err
+	}
+
+	expresionValue, err := processNodeType(expression)
+	if err != nil {
+		return "", err
+	}
+
+	return expresionValue, nil
+}
+
+func processAssignment(data []byte) (string, error) {
+	leftExpression, _, _, err := jsonparser.Get(data, "leftHandSide")
+	if err != nil {
+		return "", err
+	}
+	leftSide, err := processNodeType(leftExpression)
+	if err != nil {
+		return "", err
+	}
+
+	rightExpression, _, _, err := jsonparser.Get(data, "rightHandSide")
+	if err != nil {
+		return "", err
+	}
+	rightSide, err := processNodeType(rightExpression)
+	return leftSide + " = " + rightSide, nil
+}
+
 func processNodeType(data []byte) (string, error) {
 	// fmt.Println("processing node type", string(data))
 	nodeType, err := getNodeType(data)
@@ -479,6 +573,12 @@ func processNodeType(data []byte) (string, error) {
 		return processLiteral(data)
 	case MemberAccess:
 		return processMemberAccess(data)
+	case IfStatement:
+		return processIfStatement(data)
+	case ExpressionStatement:
+		return processExpressionStatement(data)
+	case Assignment:
+		return processAssignment(data)
 
 	// case VariableDeclaration:
 	// 	return processVariableDeclaration(data)
