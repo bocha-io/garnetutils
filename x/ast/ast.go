@@ -257,8 +257,7 @@ func ProcessAST(data []byte) error {
 			// processContractDefinition(v)
 			a, err := processNodeType(v)
 			if err != nil {
-				fmt.Println(err)
-				panic("")
+				return err
 			}
 			fmt.Println("----")
 			fmt.Println(a)
@@ -272,5 +271,5 @@ func ProcessAST(data []byte) error {
 	// 	fmt.Println(v)
 	// }
 
-	return err
+	return nil
 }
