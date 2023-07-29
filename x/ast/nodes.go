@@ -45,6 +45,10 @@ const (
 	OperatorMul = "*"
 	OperatorL   = "<"
 	OperatorG   = ">"
+	OperatorNE  = "!="
+	OperatorE   = "=="
+
+	UnaryOperation = "UnaryOperation"
 )
 
 func getNodeType(data []byte) (string, error) {
@@ -172,6 +176,18 @@ func processBinaryOperation(data []byte) (string, error) {
 		}
 		return left + " " + operator + " " + right, nil
 	case OperatorG:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+	case OperatorNE:
+		left, right, err := processBranches(data)
+		if err != nil {
+			return "", err
+		}
+		return left + " " + operator + " " + right, nil
+	case OperatorE:
 		left, right, err := processBranches(data)
 		if err != nil {
 			return "", err
@@ -588,6 +604,33 @@ func processTupleExpression(data []byte) (string, error) {
 	return ret, nil
 }
 
+func processUnaryOperation(data []byte) (string, error) {
+	operator, err := jsonparser.GetString(data, "operator")
+	if err != nil {
+		return "", err
+	}
+
+	subExpressionObject, _, _, err := jsonparser.Get(data, "subExpression")
+	if err != nil {
+		return "", err
+	}
+	subExpression, err := processNodeType(subExpressionObject)
+	if err != nil {
+		return "", err
+	}
+
+	switch operator {
+	case "!":
+		return operator + subExpression, nil
+	case "--":
+		return subExpression + operator, nil
+	case "++":
+		return subExpression + operator, nil
+	}
+
+	return operator + subExpression, nil
+}
+
 func processNodeType(data []byte) (string, error) {
 	// fmt.Println("processing node type", string(data))
 	nodeType, err := getNodeType(data)
@@ -627,6 +670,9 @@ func processNodeType(data []byte) (string, error) {
 
 	case TupleExpression:
 		return processTupleExpression(data)
+
+	case UnaryOperation:
+		return processUnaryOperation(data)
 
 	// case VariableDeclaration:
 	// 	return processVariableDeclaration(data)
