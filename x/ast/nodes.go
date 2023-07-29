@@ -26,6 +26,8 @@ const (
 
 	ExpressionStatement = "ExpressionStatement"
 	Assignment          = "Assignment"
+
+	TupleExpression = "TupleExpression"
 )
 
 const (
@@ -505,8 +507,16 @@ func processIfStatement(data []byte) (string, error) {
 	ret += trueBody
 	ret += "\n}"
 
-	// false
-	// TODO: false branch
+	falseBodyObject, dataType, _, _ := jsonparser.Get(data, "falseBody")
+	if dataType != jsonparser.NotExist {
+		ret += " else {\n"
+		falseBody, err := processNodeType(falseBodyObject)
+		if err != nil {
+			return "", err
+		}
+		ret += falseBody + "\n}"
+
+	}
 
 	return ret, err
 }
@@ -526,6 +536,11 @@ func processExpressionStatement(data []byte) (string, error) {
 }
 
 func processAssignment(data []byte) (string, error) {
+	operator, err := jsonparser.GetString(data, "operator")
+	if err != nil {
+		return "", err
+	}
+
 	leftExpression, _, _, err := jsonparser.Get(data, "leftHandSide")
 	if err != nil {
 		return "", err
@@ -540,7 +555,37 @@ func processAssignment(data []byte) (string, error) {
 		return "", err
 	}
 	rightSide, err := processNodeType(rightExpression)
-	return leftSide + " = " + rightSide, nil
+	return leftSide + " " + operator + " " + rightSide, nil
+}
+
+func processTupleExpression(data []byte) (string, error) {
+	components := []string{}
+	_, err := jsonparser.ArrayEach(
+		data,
+		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			val, err := processNodeType(value)
+			if err != nil {
+				return
+			}
+			components = append(components, val)
+		},
+		"components",
+	)
+	if err != nil {
+		return "", nil
+	}
+
+	// ret := "("
+	ret := ""
+	for k, v := range components {
+		ret += v
+		if k != len(components)-1 {
+			ret += ", "
+		}
+	}
+	// ret += ")"
+
+	return ret, nil
 }
 
 func processNodeType(data []byte) (string, error) {
@@ -579,6 +624,9 @@ func processNodeType(data []byte) (string, error) {
 		return processExpressionStatement(data)
 	case Assignment:
 		return processAssignment(data)
+
+	case TupleExpression:
+		return processTupleExpression(data)
 
 	// case VariableDeclaration:
 	// 	return processVariableDeclaration(data)
