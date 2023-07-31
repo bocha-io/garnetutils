@@ -9,8 +9,8 @@ func processBlock(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			statement, err := processNodeType(value)
-			if err != nil {
+			statement, errProcess := processNodeType(value)
+			if errProcess != nil {
 				return
 			}
 			statements = append(statements, statement)

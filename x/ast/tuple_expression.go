@@ -9,8 +9,8 @@ func processTupleExpression(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			val, err := processNodeType(value)
-			if err != nil {
+			val, errInternal := processNodeType(value)
+			if errInternal != nil {
 				return
 			}
 			components = append(components, val)

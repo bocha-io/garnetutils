@@ -13,12 +13,12 @@ func processParameterList(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			name, err := jsonparser.GetString(value, "name")
-			if err != nil {
+			name, errInternal := jsonparser.GetString(value, "name")
+			if errInternal != nil {
 				return
 			}
-			typeName, err := jsonparser.GetString(value, "typeName", "name")
-			if err != nil {
+			typeName, errInternal := jsonparser.GetString(value, "typeName", "name")
+			if errInternal != nil {
 				return
 			}
 			parameters = append(parameters, fmt.Sprintf("%s %s", name, typeName))

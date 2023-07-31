@@ -24,5 +24,9 @@ func processAssignment(data []byte) (string, error) {
 		return "", err
 	}
 	rightSide, err := processNodeType(rightExpression)
+	if err != nil {
+		return "", err
+	}
+
 	return leftSide + " " + operator + " " + rightSide, nil
 }

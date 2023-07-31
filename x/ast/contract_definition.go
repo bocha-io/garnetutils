@@ -13,8 +13,8 @@ func processContractDefinition(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			nodeString, err := processNodeType(value)
-			if err != nil {
+			nodeString, errProcess := processNodeType(value)
+			if errProcess != nil {
 				return
 			}
 			ret = fmt.Sprintf("%s\n%s", ret, nodeString)

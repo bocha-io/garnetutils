@@ -16,9 +16,14 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			// isConstant, err := jsonparser.GetBoolean(value, "constant")
-			name, err := jsonparser.GetString(value, "name")
-			typeName, err := jsonparser.GetString(value, "typeName", "name")
+			name, errInternal := jsonparser.GetString(value, "name")
+			if errInternal != nil {
+				return
+			}
+			typeName, errInternal := jsonparser.GetString(value, "typeName", "name")
+			if errInternal != nil {
+				return
+			}
 			declarations = append(declarations, fmt.Sprintf("%s %s", typeName, name))
 		},
 		"declarations",

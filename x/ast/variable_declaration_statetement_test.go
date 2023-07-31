@@ -216,5 +216,4 @@ func TestProcessVariableDeclarationStatement(t *testing.T) {
 	if val != expectedVariableDeclarationOne {
 		t.Errorf("failed variable declaration: %s, %s", val, expectedVariableDeclarationOne)
 	}
-
 }

@@ -13,6 +13,9 @@ func processIfStatement(data []byte) (string, error) {
 		return "", err
 	}
 	condition, err := processNodeType(conditionObject)
+	if err != nil {
+		return "", err
+	}
 
 	ret += condition + " {\n"
 

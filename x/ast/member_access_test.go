@@ -47,5 +47,4 @@ func TestMemberAccess(t *testing.T) {
 	if val != expected {
 		t.Errorf("failed: %s, %s", val, expected)
 	}
-
 }

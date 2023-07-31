@@ -3,7 +3,6 @@ package ast
 import "testing"
 
 func TestParameterList(t *testing.T) {
-
 	testData := `
 {
  "id": 67683,

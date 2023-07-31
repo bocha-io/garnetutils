@@ -34,7 +34,6 @@ func processBranches(data []byte) (string, string, error) {
 	}
 	rightSide, err := processNodeType(rightExpression)
 	return leftside, rightSide, err
-
 }
 
 func processBinaryOperation(data []byte) (string, error) {
@@ -43,14 +42,9 @@ func processBinaryOperation(data []byte) (string, error) {
 		return "", err
 	}
 
-	switch operator {
-	// Maybe we need to support another type of operator in the future
-	default:
-		// it has left and right side
-		left, right, err := processBranches(data)
-		if err != nil {
-			return "", err
-		}
-		return left + " " + operator + " " + right, nil
+	left, right, err := processBranches(data)
+	if err != nil {
+		return "", err
 	}
+	return left + " " + operator + " " + right, nil
 }

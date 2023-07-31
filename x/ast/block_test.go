@@ -471,5 +471,4 @@ func TestProcessBlock(t *testing.T) {
 	if val != expectedBlock {
 		t.Errorf("failed: %s, %s", val, expectedBlock)
 	}
-
 }

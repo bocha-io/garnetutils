@@ -21,15 +21,14 @@ func processFunctionCall(data []byte) (string, error) {
 		_, err := jsonparser.ArrayEach(
 			data,
 			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-				argument, err := processNodeType(value)
-				if err != nil {
+				argument, errProcess := processNodeType(value)
+				if errProcess != nil {
 					return
 				}
 				arguments = append(arguments, argument)
 			},
 			"arguments",
 		)
-
 		if err != nil {
 			return "", nil
 		}
@@ -64,15 +63,14 @@ func processFunctionCall(data []byte) (string, error) {
 		_, err := jsonparser.ArrayEach(
 			data,
 			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-				argument, err := processNodeType(value)
-				if err != nil {
+				argument, errProcess := processNodeType(value)
+				if errProcess != nil {
 					return
 				}
 				arguments = append(arguments, argument)
 			},
 			"arguments",
 		)
-
 		if err != nil {
 			return "", err
 		}
