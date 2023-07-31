@@ -7,12 +7,8 @@ import (
 )
 
 const (
-	ContractDefinition = "ContractDefinition"
-
-	VariableDeclaration = "VariableDeclaration"
-	ElementaryTypeName  = "ElementaryTypeName"
-
-	MemberAccess = "MemberAccess"
+	// VariableDeclaration = "VariableDeclaration"
+	// ElementaryTypeName = "ElementaryTypeName"
 
 	IfStatement = "IfStatement"
 
@@ -39,25 +35,6 @@ func processIdentifier(data []byte) (string, error) {
 	return jsonparser.GetString(data, "name")
 }
 
-func processContractDefinition(data []byte) (string, error) {
-	ret := ""
-	_, err := jsonparser.ArrayEach(
-		data,
-		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			nodeString, err := processNodeType(value)
-			if err != nil {
-				return
-			}
-			ret = fmt.Sprintf("%s\n%s", ret, nodeString)
-		},
-		"nodes",
-	)
-	if err != nil {
-		return "", err
-	}
-	return ret, nil
-}
-
 // func processElementaryTypeName(data []byte) (string, error) {
 // 	return jsonparser.GetString(data, "name")
 // }
@@ -71,25 +48,6 @@ func processLiteral(data []byte) (string, error) {
 		return jsonparser.GetString(data, "value")
 	}
 	return "", fmt.Errorf("%s literal not parsed", err)
-}
-
-func processMemberAccess(data []byte) (string, error) {
-	member, err := jsonparser.GetString(data, "memberName")
-	if err != nil {
-		return "", err
-	}
-
-	expressionObject, _, _, err := jsonparser.Get(data, "expression")
-	if err != nil {
-		return "", err
-	}
-
-	expression, err := processNodeType(expressionObject)
-	if err != nil {
-		return "", err
-	}
-
-	return expression + "." + member, nil
 }
 
 func processIfStatement(data []byte) (string, error) {
