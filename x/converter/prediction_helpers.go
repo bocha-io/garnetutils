@@ -6,7 +6,7 @@ import (
 )
 
 func CreateHelper(tableName string, fields []Field) string {
-	ret := fmt.Sprintf(`type %s struct{
+	ret := fmt.Sprintf(`type %s struct {
 }
 
 `, tableName)
@@ -15,7 +15,7 @@ func CreateHelper(tableName string, fields []Field) string {
 	returnValues = strings.Replace(returnValues, ", error", "", 1)
 
 	getValues := ""
-	for k, _ := range fields {
+	for k := range fields {
 		getValues += fmt.Sprintf("field%d", k)
 		if len(fields)-1 != k {
 			getValues += ", "
@@ -44,7 +44,7 @@ func CreateHelper(tableName string, fields []Field) string {
 	}
 
 	ret += fmt.Sprintf(`
-func (%s) set(ID string,%s) data.MudEvent{
+func (%s) set(ID string, %s) data.MudEvent {
     return Create%sEvent(ID, %s)
 }
 `, tableName, params, tableName, args)

@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-const expectedVariableDeclarationOne = "bool collisionX := x + size >= targetX && targetX + targetSize >= x"
+const expectedVariableDeclarationOne = "collisionX := x + size >= targetX && targetX + targetSize >= x"
 
 func TestProcessVariableDeclarationStatement(t *testing.T) {
 	testData := `

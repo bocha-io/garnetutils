@@ -75,17 +75,16 @@ func processFunctionCall(data []byte) (string, error) {
 			return "", err
 		}
 
-		ret := ""
+		ret := "("
 		if len(arguments) > 0 {
-			ret = "("
 			for k, v := range arguments {
 				ret += v
 				if k != len(arguments)-1 {
 					ret += ", "
 				}
 			}
-			ret += ")"
 		}
+		ret += ")"
 
 		// expression
 		expressionObject, _, _, err := jsonparser.Get(data, "expression")
@@ -95,6 +94,15 @@ func processFunctionCall(data []byte) (string, error) {
 		expression, err := processNodeType(expressionObject)
 		if err != nil {
 			return "", err
+		}
+		if expression == "require" {
+			if len(arguments) != 2 {
+				return "", fmt.Errorf("invalid arguments for require")
+			}
+
+			return fmt.Sprintf(`if !(%s) {
+    panic(%s)
+ }`, arguments[0], arguments[1]), nil
 		}
 		return expression + ret, nil
 	}

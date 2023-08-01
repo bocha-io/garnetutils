@@ -53,7 +53,21 @@ to quickly create a Cobra application.`,
 			fmt.Printf("error opening the config: %s\n", err.Error())
 			return
 		}
-		ast.ProcessAST(attack)
+		val, err := ast.ProcessAST(attack)
+		if err != nil {
+			fmt.Printf("error generating ast: %s", err.Error())
+		}
+
+		if output[len(output)-1] != '/' {
+			output += "/"
+		}
+
+		// import (\n\t\"fmt\"\n)\n
+		val = "package garnethelpers\n\n" + val
+
+		if err := os.WriteFile(output+"attack.go", []byte(val), 0o600); err != nil {
+			return
+		}
 
 	},
 }

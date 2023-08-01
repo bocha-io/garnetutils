@@ -2,6 +2,7 @@ package ast
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/buger/jsonparser"
 )
@@ -16,6 +17,10 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			if string(value) == "null" {
+				declarations = append(declarations, "_ _")
+				return
+			}
 			name, errInternal := jsonparser.GetString(value, "name")
 			if errInternal != nil {
 				return
@@ -49,16 +54,28 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 		}
 
 		ret := declarations[0]
+		// remove type
+		splited := strings.SplitAfter(ret, " ")
+		if len(splited) == 2 {
+			ret = splited[1]
+		}
+
 		// if there is more than one declaration, it's a tuple
 		if len(declarations) > 1 {
-			ret = "("
+			ret = ""
 			for k, v := range declarations {
+				// remove type
+				splited := strings.SplitAfter(v, " ")
+				if len(splited) == 2 {
+					v = splited[1]
+				}
+
 				ret += v
 				if k != len(declarations)-1 {
 					ret += ", "
 				}
 			}
-			ret += ")"
+			// ret += ")"
 		}
 
 		ret += " := " + value

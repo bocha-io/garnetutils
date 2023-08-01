@@ -37,7 +37,11 @@ func processFunctionDefinition(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	ret += " (" + returnsString + ") {"
+
+	if returnsString != "" {
+		ret += " (" + returnsString + ")"
+	}
+	ret += " {"
 
 	// Function body
 	body, _, _, err := jsonparser.Get(data, "body")

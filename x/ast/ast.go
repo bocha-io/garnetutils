@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/buger/jsonparser"
@@ -85,35 +84,38 @@ func GenerateGoImports(symbols []SymbolImport) string {
 	return ret
 }
 
-func ProcessAST(data []byte) error {
+func ProcessAST(data []byte) (string, error) {
 	imports := []SymbolImport{}
 	definition := []byte{}
 	nodes, err := getNodes(data)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	ret := ""
 
 	for _, v := range nodes {
 		value, err := jsonparser.GetString(v, "nodeType")
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		switch value {
 		case importDirective:
 			importData, err := processImport(v)
 			if err != nil {
-				return err
+				return "", err
 			}
 			imports = append(imports, importData)
 
 		case contractDefinition:
 			a, err := processNodeType(v)
 			if err != nil {
-				return err
+				return "", err
 			}
-			fmt.Println("----")
-			fmt.Println(a)
+			// fmt.Println("----")
+			// fmt.Println(a)
+			ret += a + "\n"
 			definition = v
 		}
 	}
@@ -121,5 +123,5 @@ func ProcessAST(data []byte) error {
 	_ = imports
 	_ = definition
 
-	return nil
+	return ret, nil
 }
