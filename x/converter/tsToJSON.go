@@ -20,5 +20,9 @@ func MudConfigToJSON(mudConfig []byte) []byte {
 	quotesRegex := regexp.MustCompile("([a-zA-Z0-9-]+):")
 	temp = quotesRegex.ReplaceAllString(temp, `"$1":`)
 
+	// Remove Comments
+	commentsRegex := regexp.MustCompile("//.*")
+	temp = commentsRegex.ReplaceAllString(temp, "")
+
 	return []byte(temp)
 }
