@@ -20,7 +20,11 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 			if errInternal != nil {
 				return
 			}
-			typeName, errInternal := jsonparser.GetString(value, "typeName", "name")
+			typeNameObject, _, _, errInternal := jsonparser.Get(value, "typeName")
+			if errInternal != nil {
+				return
+			}
+			typeName, errInternal := processNodeType(typeNameObject)
 			if errInternal != nil {
 				return
 			}

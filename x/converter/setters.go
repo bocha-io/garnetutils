@@ -2,7 +2,7 @@ package converter
 
 import "fmt"
 
-func (c *Converter) CreateEventFunction(tableName string, fields []Field) string {
+func createSettersReturnsValues(fields []Field) string {
 	returnValues := ""
 	for _, v := range fields {
 		goType := int64Type
@@ -19,6 +19,11 @@ func (c *Converter) CreateEventFunction(tableName string, fields []Field) string
 			returnValues = fmt.Sprintf("%s, %s %s", returnValues, v.Key, goType)
 		}
 	}
+	return returnValues
+}
+
+func (c *Converter) CreateEventFunction(tableName string, fields []Field) string {
+	returnValues := createSettersReturnsValues(fields)
 
 	firstLine := fmt.Sprintf(`
 func Create%sEvent(ID string, %s) data.MudEvent {

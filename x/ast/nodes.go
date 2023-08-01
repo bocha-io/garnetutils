@@ -43,6 +43,14 @@ func processNodeType(data []byte) (string, error) {
 		return processTupleExpression(data)
 	case UnaryOperation:
 		return processUnaryOperation(data)
+	case IndexAccess:
+		return processIndexAccess(data)
+	case ElementaryTypeName:
+		return processElementaryTypeName(data)
+	case UserDefinedTypeName:
+		return processUserDefinedTypeName(data)
+	case ArrayTypeName:
+		return processArrayTypeName(data)
 	default:
 		panic(nodeType + " not registered")
 	}

@@ -18,7 +18,7 @@ func (c Converter) SingleValueInt(tableName string) string {
 }`, c.mainStruct, tableName, tableName)
 }
 
-func (c Converter) MultiValueTable(tableName string, fields []Field) string {
+func processFieldsForGetter(fields []Field) (string, string, []string) {
 	errorReturn := ""
 	returnValues := "("
 	goFields := []string{}
@@ -55,6 +55,11 @@ func (c Converter) MultiValueTable(tableName string, fields []Field) string {
 		goFields = append(goFields, goType)
 	}
 	returnValues += ", error)"
+	return errorReturn, returnValues, goFields
+}
+
+func (c Converter) MultiValueTable(tableName string, fields []Field) string {
+	errorReturn, returnValues, goFields := processFieldsForGetter(fields)
 
 	firstLine := fmt.Sprintf(
 		`func (g *%s) get%s(key string) %s {`,

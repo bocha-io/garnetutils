@@ -13,17 +13,21 @@ func CreateTypesString(mainStruct string) string {
 import "github.com/bocha-io/garnet/x/indexer/data"
 
 type %s struct {
-	db    *data.Database
-	world *data.World
+	db     *data.Database
+	world  *data.World
+    active bool
 }
 
-func New%s(db *data.Database) *GameState {
-	return &GameState{
-		db:    db,
-		world: db.GetDefaultWorld(),
+func New%s(db *data.Database) *%s {
+	return &%s{
+		db:     db,
+		world:  db.GetDefaultWorld(),
+        active: true,
 	}
 }
-`, mainStruct, mainStruct)
+
+var BlockchainConnection GameObject
+`, mainStruct, mainStruct, mainStruct, mainStruct)
 }
 
 func CreateGettersString(tables []Table, c Converter) string {
@@ -74,6 +78,20 @@ func CreateEventsString(tables []Table, c Converter) string {
 	return strings.ReplaceAll(eventsFile, "    ", "\t")
 }
 
+func CreateHelpersString(tables []Table, c Converter) string {
+	helpersString := ""
+	// Events
+	for _, v := range tables {
+		helpersString += fmt.Sprintf("\n%s", CreateHelper(v.Key, v.Values))
+	}
+
+	eventsFile := "package garnethelpers\n\nimport (\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)\n"
+
+	eventsFile += helpersString
+
+	return strings.ReplaceAll(eventsFile, "    ", "\t")
+}
+
 func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	if path == "" {
 		path = "/Users/hanchon/devel/bocha-io/garnetutils/x/garnethelpers/"
@@ -104,6 +122,11 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 
 	eventsString := CreateEventsString(tables, c)
 	if err := os.WriteFile(path+"setters.go", []byte(eventsString), 0o600); err != nil {
+		return err
+	}
+
+	helpers := CreateHelpersString(tables, c)
+	if err := os.WriteFile(path+"helpers.go", []byte(helpers), 0o600); err != nil {
 		return err
 	}
 
