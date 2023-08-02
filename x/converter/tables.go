@@ -31,10 +31,15 @@ func GetTablesFromJSON(mudConfigJSON []byte) []Table {
 					table.Values = append(table.Values, Field{Key: string(key), Type: string(value)})
 					return nil
 				}, schemaName)
-				tables = append(tables, table)
 				if err != nil {
 					return err
 				}
+				_, dataType, _, _ := jsonparser.Get(value, "primaryKeys")
+				if dataType != jsonparser.NotExist {
+					// TODO: maybe there is another case, but for now we are parsing primaryKeys: {}
+					table.Singleton = true
+				}
+				tables = append(tables, table)
 			}
 			return nil
 		},

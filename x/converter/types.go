@@ -6,8 +6,9 @@ type Field struct {
 }
 
 type Table struct {
-	Key    string
-	Values []Field
+	Key       string
+	Values    []Field
+	Singleton bool
 }
 
 type Enum struct {

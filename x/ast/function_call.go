@@ -55,6 +55,9 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if funcType == "bytes32" {
+				funcType = "string"
+			}
 		}
 		return funcType + ret, nil
 
@@ -106,6 +109,7 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
  }`, arguments[0], arguments[1]), nil
 		}
 
+		isMUDTable := false
 		// Update the expression is it's using a MUD table
 		for _, v := range a.imports {
 			if strings.Contains(v.path, "tables") {
@@ -113,15 +117,19 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 					if strings.Contains(expression, symbolName) {
 						splited := strings.Split(expression, ".")
 						if len(splited) == 2 {
-							// TODO: if it is a set, do events = append(events, xxx.set())
-							expression = splited[0] + "{}." + splited[1]
+							expression = "p." + splited[0] + strings.Title(splited[1])
+
 						}
+						isMUDTable = true
 						break
 						// TODO: break the outside loop or just store table names in the struct
 					}
 				}
 			}
+		}
 
+		if !isMUDTable {
+			expression = "p." + expression
 		}
 
 		return expression + ret, nil

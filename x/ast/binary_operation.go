@@ -28,11 +28,25 @@ func (a *ASTConverter) processBranches(data []byte) (string, string, error) {
 		return "", "", err
 	}
 
+	// special case, leftExpression is bytes32 and rightExpression is number
+	isSpecialCase := false
+	leftType, err := jsonparser.GetString(data, "leftExpression", "typeDescriptions", "typeString")
+	if err == nil && leftType == "bytes32" {
+		isSpecialCase = true
+	}
+
 	rightExpression, _, _, err := jsonparser.Get(data, "rightExpression")
 	if err != nil {
 		return "", "", err
 	}
 	rightSide, err := a.processNodeType(rightExpression)
+	if isSpecialCase {
+		kind, err := jsonparser.GetString(data, "rightExpression", "kind")
+		if err == nil && kind == "number" {
+			rightSide = "string(" + rightSide + ")"
+		}
+	}
+
 	return leftside, rightSide, err
 }
 

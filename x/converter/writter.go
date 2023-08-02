@@ -34,7 +34,7 @@ func CreateGettersString(tables []Table, c Converter) string {
 	functionsString := ""
 	// Getters
 	for _, v := range tables {
-		functionsString += fmt.Sprintf("\n%s", c.MultiValueTable(v.Key, v.Values))
+		functionsString += fmt.Sprintf("\n%s", c.MultiValueTable(v.Key, v.Values, v.Singleton))
 	}
 
 	gettersFile := "package garnethelpers\n\nimport (\n"
@@ -82,10 +82,11 @@ func CreateHelpersString(tables []Table, c Converter) string {
 	helpersString := ""
 	// Events
 	for _, v := range tables {
-		helpersString += fmt.Sprintf("\n%s", CreateHelper(v.Key, v.Values))
+		helpersString += fmt.Sprintf("\n%s", CreateHelper(v.Key, v.Values, v.Singleton))
 	}
 
-	eventsFile := "package garnethelpers\n\nimport (\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)\n"
+	eventsFile := "package garnethelpers\n\nimport (\n\t\"strings\"\n\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)\n\n"
+	eventsFile += CreateHelperStruct()
 
 	eventsFile += helpersString
 

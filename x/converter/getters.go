@@ -58,14 +58,24 @@ func processFieldsForGetter(fields []Field) (string, string, []string) {
 	return errorReturn, returnValues, goFields
 }
 
-func (c Converter) MultiValueTable(tableName string, fields []Field) string {
+func (c Converter) MultiValueTable(tableName string, fields []Field, singleton bool) string {
 	errorReturn, returnValues, goFields := processFieldsForGetter(fields)
+	args := "(key string)"
+	key := ""
+	if singleton {
+		args = "()"
+		key = "key := \"\""
+	}
 
 	firstLine := fmt.Sprintf(
-		`func (g *%s) get%s(key string) %s {`,
+		`func (g *%s) get%s%s %s {
+    %s`,
+
 		c.mainStruct,
 		tableName,
+		args,
 		returnValues,
+		key,
 	)
 	getValues := fmt.Sprintf(`
     fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")

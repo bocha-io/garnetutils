@@ -5,12 +5,22 @@ import (
 	"strings"
 )
 
-func CreateHelper(tableName string, fields []Field) string {
-	ret := fmt.Sprintf(`type %s struct {
+const PredictionObject = "Prediction"
+
+func CreateHelperStruct() string {
+	return fmt.Sprintf(`type %s struct {
+    events []data.MudEvent
 }
 
-`, tableName)
+func (%s) addressToEntityKey(address string) string{
+        return strings.Replace(address, "0x", "0x000000000000000000000000", 1)
+}
+`, PredictionObject, PredictionObject)
+	// TODO: add NewPredictionObject function
+}
 
+func CreateHelper(tableName string, fields []Field, sigleton bool) string {
+	ret := ""
 	_, returnValues, _ := processFieldsForGetter(fields)
 	returnValues = strings.Replace(returnValues, ", error", "", 1)
 
@@ -22,17 +32,24 @@ func CreateHelper(tableName string, fields []Field) string {
 		}
 	}
 
-	ret += fmt.Sprintf(`func (%s) get(key string) %s {
+	argsGetter := "key string"
+	key := "key"
+	if sigleton {
+		argsGetter = ""
+		key = ""
+	}
+
+	ret += fmt.Sprintf(`func (%s) %sGet(%s) %s {
     if !BlockchainConnection.active {
         panic("game object is not active")
     }
-    %s, err := BlockchainConnection.get%s(key)
+    %s, err := BlockchainConnection.get%s(%s)
     if err != nil {
         panic("value not found")
     }
     return %s
 }
-`, tableName, returnValues, getValues, tableName, getValues)
+`, PredictionObject, tableName, argsGetter, returnValues, getValues, tableName, key, getValues)
 
 	params := createSettersReturnsValues(fields)
 	args := ""
@@ -44,10 +61,10 @@ func CreateHelper(tableName string, fields []Field) string {
 	}
 
 	ret += fmt.Sprintf(`
-func (%s) set(ID string, %s) data.MudEvent {
-    return Create%sEvent(ID, %s)
+func (p %s) %sSet(ID string, %s) {
+    p.events = append(p.events, Create%sEvent(ID, %s))
 }
-`, tableName, params, tableName, args)
+`, PredictionObject, tableName, params, tableName, args)
 
 	return ret
 }
