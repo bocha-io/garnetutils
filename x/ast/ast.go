@@ -3,6 +3,7 @@ package ast
 import (
 	"strings"
 
+	"github.com/bocha-io/garnetutils/x/converter"
 	"github.com/buger/jsonparser"
 )
 
@@ -84,8 +85,19 @@ func GenerateGoImports(symbols []SymbolImport) string {
 	return ret
 }
 
-func ProcessAST(data []byte) (string, error) {
-	imports := []SymbolImport{}
+type ASTConverter struct {
+	imports []SymbolImport
+	Enums   []converter.Enum
+}
+
+func NewASTConverter() *ASTConverter {
+	return &ASTConverter{
+		imports: []SymbolImport{},
+		Enums:   []converter.Enum{},
+	}
+}
+
+func (a *ASTConverter) ProcessAST(data []byte) (string, error) {
 	definition := []byte{}
 	nodes, err := getNodes(data)
 	if err != nil {
@@ -106,10 +118,10 @@ func ProcessAST(data []byte) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			imports = append(imports, importData)
+			a.imports = append(a.imports, importData)
 
 		case contractDefinition:
-			a, err := processNodeType(v)
+			a, err := a.processNodeType(v)
 			if err != nil {
 				return "", err
 			}
@@ -120,7 +132,6 @@ func ProcessAST(data []byte) (string, error) {
 		}
 	}
 
-	_ = imports
 	_ = definition
 
 	return ret, nil

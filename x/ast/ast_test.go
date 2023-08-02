@@ -9,7 +9,7 @@ import (
 var ticFile []byte
 
 func TestAST(t *testing.T) {
-	_, err := ProcessAST(ticFile)
+	_, err := NewASTConverter().ProcessAST(ticFile)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

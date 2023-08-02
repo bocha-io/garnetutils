@@ -50,7 +50,7 @@ func TestProcessAssignment(t *testing.T) {
 
 	expected := "enemyX += 5"
 
-	val, err := processAssignment([]byte(testData))
+	val, err := NewASTConverter().processAssignment([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

@@ -4,12 +4,12 @@ import "github.com/buger/jsonparser"
 
 const Block = "Block"
 
-func processBlock(data []byte) (string, error) {
+func (a *ASTConverter) processBlock(data []byte) (string, error) {
 	statements := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			statement, errProcess := processNodeType(value)
+			statement, errProcess := a.processNodeType(value)
 			if errProcess != nil {
 				return
 			}

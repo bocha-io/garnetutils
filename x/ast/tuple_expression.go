@@ -4,12 +4,12 @@ import "github.com/buger/jsonparser"
 
 const TupleExpression = "TupleExpression"
 
-func processTupleExpression(data []byte) (string, error) {
+func (a *ASTConverter) processTupleExpression(data []byte) (string, error) {
 	components := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			val, errInternal := processNodeType(value)
+			val, errInternal := a.processNodeType(value)
 			if errInternal != nil {
 				return
 			}

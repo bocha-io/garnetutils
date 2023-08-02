@@ -19,7 +19,7 @@ func TestIdentifier(t *testing.T) {
 
 	expected := "x"
 
-	val, err := processIdentifier([]byte(testData))
+	val, err := NewASTConverter().processIdentifier([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

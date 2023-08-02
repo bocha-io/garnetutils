@@ -18,12 +18,12 @@ const (
 	OperatorE   = "=="
 )
 
-func processBranches(data []byte) (string, string, error) {
+func (a *ASTConverter) processBranches(data []byte) (string, string, error) {
 	leftExpression, _, _, err := jsonparser.Get(data, "leftExpression")
 	if err != nil {
 		return "", "", err
 	}
-	leftside, err := processNodeType(leftExpression)
+	leftside, err := a.processNodeType(leftExpression)
 	if err != nil {
 		return "", "", err
 	}
@@ -32,17 +32,17 @@ func processBranches(data []byte) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	rightSide, err := processNodeType(rightExpression)
+	rightSide, err := a.processNodeType(rightExpression)
 	return leftside, rightSide, err
 }
 
-func processBinaryOperation(data []byte) (string, error) {
+func (a *ASTConverter) processBinaryOperation(data []byte) (string, error) {
 	operator, err := jsonparser.GetString(data, "operator")
 	if err != nil {
 		return "", err
 	}
 
-	left, right, err := processBranches(data)
+	left, right, err := a.processBranches(data)
 	if err != nil {
 		return "", err
 	}

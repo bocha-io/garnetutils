@@ -4,7 +4,7 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-func processNodeType(data []byte) (string, error) {
+func (a *ASTConverter) processNodeType(data []byte) (string, error) {
 	nodeType, err := jsonparser.GetString(data, "nodeType")
 	if err != nil {
 		return "", err
@@ -12,45 +12,45 @@ func processNodeType(data []byte) (string, error) {
 
 	switch nodeType {
 	case VariableDeclarationStatement:
-		return processVariableDeclarationStatement(data)
+		return a.processVariableDeclarationStatement(data)
 	case BinaryOperation:
-		return processBinaryOperation(data)
+		return a.processBinaryOperation(data)
 	case Identifier:
-		return processIdentifier(data)
+		return a.processIdentifier(data)
 	case Return:
-		return processReturn(data)
+		return a.processReturn(data)
 	case Block:
-		return processBlock(data)
+		return a.processBlock(data)
 	case ContractDefinition:
-		return processContractDefinition(data)
+		return a.processContractDefinition(data)
 	case FunctionDefinition:
-		return processFunctionDefinition(data)
+		return a.processFunctionDefinition(data)
 	case ParameterList:
-		return processParameterList(data)
+		return a.processParameterList(data)
 	case FunctionCall:
-		return processFunctionCall(data)
+		return a.processFunctionCall(data)
 	case Literal:
-		return processLiteral(data)
+		return a.processLiteral(data)
 	case MemberAccess:
-		return processMemberAccess(data)
+		return a.processMemberAccess(data)
 	case IfStatement:
-		return processIfStatement(data)
+		return a.processIfStatement(data)
 	case ExpressionStatement:
-		return processExpressionStatement(data)
+		return a.processExpressionStatement(data)
 	case Assignment:
-		return processAssignment(data)
+		return a.processAssignment(data)
 	case TupleExpression:
-		return processTupleExpression(data)
+		return a.processTupleExpression(data)
 	case UnaryOperation:
-		return processUnaryOperation(data)
+		return a.processUnaryOperation(data)
 	case IndexAccess:
-		return processIndexAccess(data)
+		return a.processIndexAccess(data)
 	case ElementaryTypeName:
-		return processElementaryTypeName(data)
+		return a.processElementaryTypeName(data)
 	case UserDefinedTypeName:
-		return processUserDefinedTypeName(data)
+		return a.processUserDefinedTypeName(data)
 	case ArrayTypeName:
-		return processArrayTypeName(data)
+		return a.processArrayTypeName(data)
 	default:
 		panic(nodeType + " not registered")
 	}

@@ -8,14 +8,14 @@ import (
 
 const IndexAccess = "IndexAccess"
 
-func processIndexAccess(data []byte) (string, error) {
+func (a *ASTConverter) processIndexAccess(data []byte) (string, error) {
 	// Base
 	baseExpression, _, _, err := jsonparser.Get(data, "baseExpression")
 	if err != nil {
 		return "", err
 	}
 
-	base, err := processNodeType(baseExpression)
+	base, err := a.processNodeType(baseExpression)
 	if err != nil {
 		return "", err
 	}
@@ -26,7 +26,7 @@ func processIndexAccess(data []byte) (string, error) {
 		return "", err
 	}
 
-	value, err := processNodeType(indexExpression)
+	value, err := a.processNodeType(indexExpression)
 	if err != nil {
 		return "", err
 	}

@@ -67,7 +67,7 @@ func TestFunctionCall_TypeConversion(t *testing.T) {
   `
 
 	expected := "int32(10)"
-	val, err := processFunctionCall([]byte(testData))
+	val, err := NewASTConverter().processFunctionCall([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}
@@ -143,7 +143,7 @@ func TestFunctionCall_FunctionCall(t *testing.T) {
 }
 `
 	expected := "Position.get(enemyID)"
-	val, err := processFunctionCall([]byte(testData))
+	val, err := NewASTConverter().processFunctionCall([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

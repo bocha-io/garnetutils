@@ -2,13 +2,14 @@ package ast
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/buger/jsonparser"
 )
 
 const FunctionCall = "FunctionCall"
 
-func processFunctionCall(data []byte) (string, error) {
+func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 	kind, err := jsonparser.GetString(data, "kind")
 	if err != nil {
 		return "", err
@@ -21,7 +22,7 @@ func processFunctionCall(data []byte) (string, error) {
 		_, err := jsonparser.ArrayEach(
 			data,
 			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-				argument, errProcess := processNodeType(value)
+				argument, errProcess := a.processNodeType(value)
 				if errProcess != nil {
 					return
 				}
@@ -63,7 +64,7 @@ func processFunctionCall(data []byte) (string, error) {
 		_, err := jsonparser.ArrayEach(
 			data,
 			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-				argument, errProcess := processNodeType(value)
+				argument, errProcess := a.processNodeType(value)
 				if errProcess != nil {
 					return
 				}
@@ -91,7 +92,7 @@ func processFunctionCall(data []byte) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		expression, err := processNodeType(expressionObject)
+		expression, err := a.processNodeType(expressionObject)
 		if err != nil {
 			return "", err
 		}
@@ -104,6 +105,25 @@ func processFunctionCall(data []byte) (string, error) {
     panic(%s)
  }`, arguments[0], arguments[1]), nil
 		}
+
+		// Update the expression is it's using a MUD table
+		for _, v := range a.imports {
+			if strings.Contains(v.path, "tables") {
+				for _, symbolName := range v.symbols {
+					if strings.Contains(expression, symbolName) {
+						splited := strings.Split(expression, ".")
+						if len(splited) == 2 {
+							// TODO: if it is a set, do events = append(events, xxx.set())
+							expression = splited[0] + "{}." + splited[1]
+						}
+						break
+						// TODO: break the outside loop or just store table names in the struct
+					}
+				}
+			}
+
+		}
+
 		return expression + ret, nil
 	}
 

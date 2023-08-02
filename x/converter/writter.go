@@ -112,6 +112,8 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	jsonFile := MudConfigToJSON(mudConfig)
 	// Tables
 	tables := GetTablesFromJSON(jsonFile)
+	// Enums
+	enums := GetEnumsFromJSON(jsonFile)
 
 	c := Converter{mainStruct: mainStruct}
 
@@ -127,6 +129,24 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 
 	helpers := CreateHelpersString(tables, c)
 	if err := os.WriteFile(path+"helpers.go", []byte(helpers), 0o600); err != nil {
+		return err
+	}
+
+	enumsString := "package garnethelpers\n\n"
+	for _, v := range enums {
+		for k, e := range v.Values {
+			if k == 0 {
+				enumsString += fmt.Sprintf("const (\n\t%s = iota\n", e)
+			} else {
+				enumsString += "\t" + e + "\n"
+			}
+			if k == len(v.Values)-1 {
+				enumsString += ")\n"
+			}
+		}
+
+	}
+	if err := os.WriteFile(path+"enums.go", []byte(enumsString), 0o600); err != nil {
 		return err
 	}
 

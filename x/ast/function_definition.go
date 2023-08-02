@@ -8,7 +8,7 @@ import (
 
 const FunctionDefinition = "FunctionDefinition"
 
-func processFunctionDefinition(data []byte) (string, error) {
+func (a *ASTConverter) processFunctionDefinition(data []byte) (string, error) {
 	functionName, err := jsonparser.GetString(data, "name")
 	if err != nil {
 		return "", err
@@ -21,7 +21,7 @@ func processFunctionDefinition(data []byte) (string, error) {
 		return "", err
 	}
 
-	parametersString, err := processNodeType(parameters)
+	parametersString, err := a.processNodeType(parameters)
 	if err != nil {
 		return "", err
 	}
@@ -33,7 +33,7 @@ func processFunctionDefinition(data []byte) (string, error) {
 		return "", err
 	}
 
-	returnsString, err := processNodeType(returns)
+	returnsString, err := a.processNodeType(returns)
 	if err != nil {
 		return "", err
 	}
@@ -52,7 +52,7 @@ func processFunctionDefinition(data []byte) (string, error) {
 	_, err = jsonparser.ArrayEach(
 		body,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			nodeString, errProcess := processNodeType(value)
+			nodeString, errProcess := a.processNodeType(value)
 			if errProcess != nil {
 				return
 			}

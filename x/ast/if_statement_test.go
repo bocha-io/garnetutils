@@ -215,7 +215,7 @@ if enemyX < playerX {
 enemyX += 5
 }
 }`
-	val, err := processIfStatement([]byte(testData))
+	val, err := NewASTConverter().processIfStatement([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

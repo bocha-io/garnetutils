@@ -12,20 +12,20 @@ const (
 	ArrayTypeName       = "ArrayTypeName"
 )
 
-func processUserDefinedTypeName(data []byte) (string, error) {
+func (a *ASTConverter) processUserDefinedTypeName(data []byte) (string, error) {
 	return jsonparser.GetString(data, "pathNode", "name")
 }
 
-func processElementaryTypeName(data []byte) (string, error) {
+func (a *ASTConverter) processElementaryTypeName(data []byte) (string, error) {
 	return jsonparser.GetString(data, "name")
 }
 
-func processArrayTypeName(data []byte) (string, error) {
+func (a *ASTConverter) processArrayTypeName(data []byte) (string, error) {
 	baseType, _, _, err := jsonparser.Get(data, "baseType")
 	if err != nil {
 		return "", err
 	}
-	typeString, err := processNodeType(baseType)
+	typeString, err := a.processNodeType(baseType)
 	if err != nil {
 		return "", err
 	}

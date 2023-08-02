@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const MemberAccess = "MemberAccess"
 
-func processMemberAccess(data []byte) (string, error) {
+func (a *ASTConverter) processMemberAccess(data []byte) (string, error) {
 	member, err := jsonparser.GetString(data, "memberName")
 	if err != nil {
 		return "", err
@@ -15,9 +15,16 @@ func processMemberAccess(data []byte) (string, error) {
 		return "", err
 	}
 
-	expression, err := processNodeType(expressionObject)
+	expression, err := a.processNodeType(expressionObject)
 	if err != nil {
 		return "", err
+	}
+
+	// Remove enum name if it's a class defined by MUD
+	for _, v := range a.Enums {
+		if expression == v.Key {
+			return member, nil
+		}
 	}
 
 	return expression + "." + member, nil

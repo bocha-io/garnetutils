@@ -677,11 +677,11 @@ func TestProcessFunctionDefinition(t *testing.T) {
     "visibility": "private"
   }
 `
-	expected := `func checkCollision (x int32, y int32, size int32, targetX int32, targetY int32, targetSize int32)  ( bool) {
+	expected := `func checkCollision (x int64, y int64, size int64, targetX int64, targetY int64, targetSize int64)  ( bool) {
 ` + expectedBlock + `
 }`
 
-	val, err := processFunctionDefinition([]byte(testData))
+	val, err := NewASTConverter().processFunctionDefinition([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

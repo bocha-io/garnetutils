@@ -53,7 +53,15 @@ to quickly create a Cobra application.`,
 			fmt.Printf("error opening the config: %s\n", err.Error())
 			return
 		}
-		val, err := ast.ProcessAST(attack)
+
+		// Convert to JSON
+		jsonFile := converter.MudConfigToJSON(mudConfigFile)
+		// Enums
+		enums := converter.GetEnumsFromJSON(jsonFile)
+		astConvereter := ast.NewASTConverter()
+		astConvereter.Enums = enums
+
+		val, err := astConvereter.ProcessAST(attack)
 		if err != nil {
 			fmt.Printf("error generating ast: %s", err.Error())
 		}

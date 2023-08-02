@@ -11,7 +11,7 @@ const (
 	VariableDeclarationStatement = "VariableDeclarationStatement"
 )
 
-func processVariableDeclarationStatement(data []byte) (string, error) {
+func (a *ASTConverter) processVariableDeclarationStatement(data []byte) (string, error) {
 	// This only supports one var at the time
 	declarations := []string{}
 	_, err := jsonparser.ArrayEach(
@@ -29,7 +29,7 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 			if errInternal != nil {
 				return
 			}
-			typeName, errInternal := processNodeType(typeNameObject)
+			typeName, errInternal := a.processNodeType(typeNameObject)
 			if errInternal != nil {
 				return
 			}
@@ -48,7 +48,7 @@ func processVariableDeclarationStatement(data []byte) (string, error) {
 			return "", err
 		}
 
-		value, err = processNodeType(initialValue)
+		value, err = a.processNodeType(initialValue)
 		if err != nil {
 			return "", err
 		}

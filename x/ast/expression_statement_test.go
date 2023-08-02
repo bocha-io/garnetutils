@@ -55,7 +55,7 @@ func TestExpressionStatement(t *testing.T) {
 
 	expected := "enemyX += 5"
 
-	val, err := processExpressionStatement([]byte(testData))
+	val, err := NewASTConverter().processExpressionStatement([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

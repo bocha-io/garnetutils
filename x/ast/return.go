@@ -4,13 +4,13 @@ import "github.com/buger/jsonparser"
 
 const Return = "Return"
 
-func processReturn(data []byte) (string, error) {
+func (a *ASTConverter) processReturn(data []byte) (string, error) {
 	expression, _, _, err := jsonparser.Get(data, "expression")
 	if err != nil {
 		return "", err
 	}
 
-	expresionValue, err := processNodeType(expression)
+	expresionValue, err := a.processNodeType(expression)
 	if err != nil {
 		return "", err
 	}

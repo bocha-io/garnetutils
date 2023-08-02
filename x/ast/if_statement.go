@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const IfStatement = "IfStatement"
 
-func processIfStatement(data []byte) (string, error) {
+func (a *ASTConverter) processIfStatement(data []byte) (string, error) {
 	ret := "if "
 	// condition
 
@@ -12,7 +12,7 @@ func processIfStatement(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	condition, err := processNodeType(conditionObject)
+	condition, err := a.processNodeType(conditionObject)
 	if err != nil {
 		return "", err
 	}
@@ -24,7 +24,7 @@ func processIfStatement(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	trueBody, err := processNodeType(trueBodyObject)
+	trueBody, err := a.processNodeType(trueBodyObject)
 	ret += trueBody
 	ret += "\n}"
 
@@ -32,7 +32,7 @@ func processIfStatement(data []byte) (string, error) {
 	falseBodyObject, dataType, _, _ := jsonparser.Get(data, "falseBody")
 	if dataType != jsonparser.NotExist {
 		ret += " else {\n"
-		falseBody, err := processNodeType(falseBodyObject)
+		falseBody, err := a.processNodeType(falseBodyObject)
 		if err != nil {
 			return "", err
 		}

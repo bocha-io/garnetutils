@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const Assignment = "Assignment"
 
-func processAssignment(data []byte) (string, error) {
+func (a *ASTConverter) processAssignment(data []byte) (string, error) {
 	operator, err := jsonparser.GetString(data, "operator")
 	if err != nil {
 		return "", err
@@ -14,7 +14,7 @@ func processAssignment(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	leftSide, err := processNodeType(leftExpression)
+	leftSide, err := a.processNodeType(leftExpression)
 	if err != nil {
 		return "", err
 	}
@@ -23,7 +23,7 @@ func processAssignment(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	rightSide, err := processNodeType(rightExpression)
+	rightSide, err := a.processNodeType(rightExpression)
 	if err != nil {
 		return "", err
 	}
