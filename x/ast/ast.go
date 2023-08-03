@@ -129,6 +129,14 @@ func (a *ASTConverter) ProcessAST(data []byte) (string, error) {
 			// fmt.Println(a)
 			ret += a + "\n"
 			definition = v
+
+		// helpers files where functions are outside a contract
+		case FunctionDefinition:
+			a, err := a.processNodeType(v)
+			if err != nil {
+				return "", err
+			}
+			ret += a + "\n"
 		}
 	}
 

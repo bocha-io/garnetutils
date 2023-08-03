@@ -66,5 +66,11 @@ func (p %s) %sSet(ID string, %s) {
 }
 `, PredictionObject, tableName, params, tableName, args)
 
+	ret += fmt.Sprintf(`
+func (p %s) %sDeleteRecord(ID string) {
+    p.events = append(p.events, Delete%sEvent(ID))
+}
+`, PredictionObject, tableName, tableName)
+
 	return ret
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/bocha-io/garnetutils/x/utils"
 	"github.com/buger/jsonparser"
 )
 
@@ -12,7 +13,6 @@ const (
 )
 
 func (a *ASTConverter) processVariableDeclarationStatement(data []byte) (string, error) {
-	// This only supports one var at the time
 	declarations := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,
@@ -45,9 +45,19 @@ func (a *ASTConverter) processVariableDeclarationStatement(data []byte) (string,
 	if len(declarations) != 0 {
 		initialValue, _, _, err := jsonparser.Get(data, "initialValue")
 		if err != nil {
-			return "", err
+			// It has no initial value, it's just a var declaration
+			val := ""
+			for _, v := range declarations {
+				splited := strings.SplitAfter(v, " ")
+				if len(splited) == 2 {
+					varType := utils.SolidityTypeToGolang(splited[0])
+					val += "var " + splited[1] + " " + varType + "\n"
+				}
+			}
+			return val, nil
 		}
 
+		// It has initial value
 		value, err = a.processNodeType(initialValue)
 		if err != nil {
 			return "", err

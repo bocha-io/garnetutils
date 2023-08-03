@@ -112,17 +112,18 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 		isMUDTable := false
 		// Update the expression is it's using a MUD table
 		for _, v := range a.imports {
+			if isMUDTable {
+				break
+			}
 			if strings.Contains(v.path, "tables") {
 				for _, symbolName := range v.symbols {
-					if strings.Contains(expression, symbolName) {
-						splited := strings.Split(expression, ".")
-						if len(splited) == 2 {
+					splited := strings.Split(expression, ".")
+					if len(splited) == 2 {
+						if splited[0] == symbolName {
 							expression = "p." + splited[0] + strings.Title(splited[1])
-
+							isMUDTable = true
+							break
 						}
-						isMUDTable = true
-						break
-						// TODO: break the outside loop or just store table names in the struct
 					}
 				}
 			}

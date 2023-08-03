@@ -46,8 +46,7 @@ to quickly create a Cobra application.`,
 			fmt.Printf("error generating files: %s", err.Error())
 		}
 
-		// readFiles(filepath.Join(input, "src"))
-
+		// Attack file
 		attack, err := os.ReadFile(filepath.Join(input, "out", "AttackSystem.sol", "AttackSystem.json"))
 		if err != nil {
 			fmt.Printf("error opening the config: %s\n", err.Error())
@@ -70,10 +69,50 @@ to quickly create a Cobra application.`,
 			output += "/"
 		}
 
-		// import (\n\t\"fmt\"\n)\n
 		val = "package garnethelpers\n\n" + val
-
 		if err := os.WriteFile(output+"attack.go", []byte(val), 0o600); err != nil {
+			return
+		}
+
+		// LibCover
+		libcover, err := os.ReadFile(filepath.Join(input, "out", "LibCover.sol", "LibCover.json"))
+		if err != nil {
+			fmt.Printf("error opening the config: %s\n", err.Error())
+			return
+		}
+
+		val, err = astConvereter.ProcessAST(libcover)
+		if err != nil {
+			fmt.Printf("error generating ast: %s", err.Error())
+		}
+
+		if output[len(output)-1] != '/' {
+			output += "/"
+		}
+
+		val = "package garnethelpers\n\n" + val
+		if err := os.WriteFile(output+"libcover.go", []byte(val), 0o600); err != nil {
+			return
+		}
+
+		// endMatch
+		endMatch, err := os.ReadFile(filepath.Join(input, "out", "endMatch.sol", "endMatch.json"))
+		if err != nil {
+			fmt.Printf("error opening the config: %s\n", err.Error())
+			return
+		}
+
+		val, err = astConvereter.ProcessAST(endMatch)
+		if err != nil {
+			fmt.Printf("error generating ast: %s", err.Error())
+		}
+
+		if output[len(output)-1] != '/' {
+			output += "/"
+		}
+
+		val = "package garnethelpers\n\n" + val
+		if err := os.WriteFile(output+"endmatch.go", []byte(val), 0o600); err != nil {
 			return
 		}
 

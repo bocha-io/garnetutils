@@ -8,7 +8,7 @@ func createSettersReturnsValues(fields []Field) string {
 		goType := int64Type
 		switch v.Type {
 		case bytes32Type:
-			goType = "[]byte"
+			goType = "string"
 		case boolType:
 			goType = boolType
 		}
@@ -46,5 +46,18 @@ func Create%sEvent(ID string, %s) data.MudEvent {
 	}
 	fieldsEvents += "        },\n    }"
 
-	return fmt.Sprintf("%s%s\n}", firstLine, fieldsEvents)
+	setter := fmt.Sprintf("%s%s\n}", firstLine, fieldsEvents)
+
+	remover := fmt.Sprintf(`
+
+func Delete%sEvent(ID string) data.MudEvent {
+    return data.MudEvent{
+        Table:  "%s",
+        Key:    ID,
+        Fields: []data.Field{},
+    }
+}
+`, tableName, tableName)
+
+	return setter + remover
 }
