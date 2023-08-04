@@ -1,6 +1,8 @@
 package converter
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Converter struct {
 	mainStruct string
@@ -64,21 +66,18 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 	key := ""
 	if singleton {
 		args = "()"
-		key = "key := \"\""
+		key = "\n    key := \"\""
 	}
 
 	firstLine := fmt.Sprintf(
-		`func (g *%s) get%s%s %s {
-    %s`,
-
+		`func (g *%s) get%s%s %s {%s`,
 		c.mainStruct,
 		tableName,
 		args,
 		returnValues,
 		key,
 	)
-	getValues := fmt.Sprintf(`
-    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
+	getValues := fmt.Sprintf(`    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
     if err != nil {
         return %s, err
     }`,
@@ -128,4 +127,71 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 %s
 %s`,
 		firstLine, getValues, checkLenght, getters, validReturn)
+}
+
+func (c Converter) GetRows(tableName string, fields []Field, singleton bool) string {
+	_, _, goFields := processFieldsForGetter(fields)
+
+	args := ""
+	for k, v := range goFields {
+		args += fmt.Sprintf("arg%d %s", k, v)
+		if k != len(goFields)-1 {
+			args += ", "
+		}
+	}
+
+	firstLine := fmt.Sprintf(
+		`func (g %s) getRows%s(tableName string, %s) []string{
+	table := g.world.GetTableByName("%s")
+	rows := g.db.GetRows(table)
+ 	for k, fields := range rows {`,
+		c.mainStruct,
+		tableName,
+		args,
+		tableName,
+	)
+
+	checkLenght := fmt.Sprintf(`        if len(fields) != %d {
+            continue
+        }`,
+		len(fields))
+
+	getters := ""
+	for k, v := range goFields {
+		switch v {
+		case int64Type:
+			getters = fmt.Sprintf(`%s
+        field%d, err := strconv.ParseInt(fields[%d].Data.String(), 10, 32)
+        if err != nil {
+            continue
+        }
+        if field%d != arg%d {
+            continue
+        }`, getters, k, k, k, k)
+
+		case boolType:
+			getters = fmt.Sprintf(`%s
+        field%d := fields[%d].Data.String() == "true"
+        if field%d != arg%d {
+            continue
+        }`, getters, k, k, k, k)
+
+		case stringType:
+			getters = fmt.Sprintf(`%s
+        field%d := strings.ReplaceAll(fields[%d].Data.String(), "\"", "")
+        if field%d != arg%d {
+            continue
+        }`, getters, k, k, k, k)
+		}
+	}
+	getters += ("\n        return []string{k}\n    }")
+
+	return fmt.Sprintf(`
+%s
+%s
+%s
+    return []string{}
+}
+`,
+		firstLine, checkLenght, getters)
 }

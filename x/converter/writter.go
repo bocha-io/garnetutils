@@ -35,6 +35,7 @@ func CreateGettersString(tables []Table, c Converter) string {
 	// Getters
 	for _, v := range tables {
 		functionsString += fmt.Sprintf("\n%s", c.MultiValueTable(v.Key, v.Values, v.Singleton))
+		functionsString += fmt.Sprintf("\n%s", c.GetRows(v.Key, v.Values, v.Singleton))
 	}
 
 	gettersFile := "package garnethelpers\n\nimport (\n"

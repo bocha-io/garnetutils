@@ -72,5 +72,11 @@ func (p %s) %sDeleteRecord(ID string) {
 }
 `, PredictionObject, tableName, tableName)
 
+	ret += fmt.Sprintf(`
+func (p %s) getKeys%s(ID string) {
+    p.events = append(p.events, Delete%sEvent(ID))
+}
+`, PredictionObject, tableName, tableName)
+
 	return ret
 }
