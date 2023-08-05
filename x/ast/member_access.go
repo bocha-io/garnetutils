@@ -27,5 +27,9 @@ func (a *ASTConverter) processMemberAccess(data []byte) (string, error) {
 		}
 	}
 
+	if member == "length" {
+		return "len(" + expression + ")", nil
+	}
+
 	return expression + "." + member, nil
 }

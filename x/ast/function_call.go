@@ -126,6 +126,20 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 						}
 					}
 				}
+			} else {
+				for _, v := range strings.Split(v.path, "/") {
+					// Remove extension from the file
+					v = strings.Split(v, ".")[0]
+
+					splited := strings.Split(expression, ".")
+					if len(splited) == 2 {
+						if splited[0] == v {
+							expression = "p." + splited[1]
+							isMUDTable = true
+							break
+						}
+					}
+				}
 			}
 		}
 
