@@ -1,12 +1,36 @@
 package utils
 
-func SolidityTypeToGolang(val string) string {
+import (
+	"strings"
+)
+
+func SolidityTypeToGolang(val string, enums []string) string {
+	brackets := ""
+	splitted := strings.Split(val, "]")
+	if len(splitted) == 2 {
+		val = splitted[1]
+		brackets = "[]"
+	}
+	val = strings.Trim(val, " ")
+
+	for _, v := range enums {
+		if val == v {
+			return "int64"
+		}
+	}
+
 	switch val {
 	case "bytes32":
-		return "string"
+		return brackets + "string"
 	case "bool":
-		return "bool"
+		return brackets + "bool"
+	case "int64":
+		return brackets + "int64"
+	case "uint32":
+		return brackets + "int64"
+	case "uint8":
+		return brackets + "int64"
 	default:
-		return "int64"
+		return brackets + val
 	}
 }

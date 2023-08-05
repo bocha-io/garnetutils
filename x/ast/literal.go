@@ -13,7 +13,15 @@ func (a *ASTConverter) processLiteral(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if kind == "number" || kind == "bool" {
+	if kind == "number" {
+		value, err := jsonparser.GetString(data, "value")
+		if err != nil {
+			return "", err
+		}
+		return "int64(" + value + ")", nil
+	}
+
+	if kind == "bool" {
 		return jsonparser.GetString(data, "value")
 	}
 

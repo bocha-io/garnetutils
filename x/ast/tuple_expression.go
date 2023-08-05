@@ -9,6 +9,11 @@ func (a *ASTConverter) processTupleExpression(data []byte) (string, error) {
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			// Ignored values in the solidity tuple does not have a node type, it's a null element
+			if string(value) == "null" {
+				components = append(components, "_")
+			}
+
 			val, errInternal := a.processNodeType(value)
 			if errInternal != nil {
 				return

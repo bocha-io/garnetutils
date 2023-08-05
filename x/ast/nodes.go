@@ -51,6 +51,12 @@ func (a *ASTConverter) processNodeType(data []byte) (string, error) {
 		return a.processUserDefinedTypeName(data)
 	case ArrayTypeName:
 		return a.processArrayTypeName(data)
+	case ForStatement:
+		return a.processForStatement(data)
+	case Continue:
+		return a.processContinue(data)
+	case StructDefinition:
+		return a.processStructDefinition(data)
 	default:
 		panic(nodeType + " not registered")
 	}

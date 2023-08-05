@@ -13,6 +13,39 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// // Attack file
+// attack, err := os.ReadFile(filepath.Join(input, "out", "AttackSystem.sol", "AttackSystem.json"))
+//
+//	if err != nil {
+//	    fmt.Printf("error opening the config: %s\n", err.Error())
+//	    return ""
+//	}
+//
+// // Convert to JSON
+// jsonFile := converter.MudConfigToJSON(mudConfigFile)
+// // Enums
+// enums := converter.GetEnumsFromJSON(jsonFile)
+//
+//	if output[len(output)-1] != '/' {
+//	    output += "/"
+//	}
+func ProcessFile(file []byte, enums []converter.Enum) string {
+	astConvereter := ast.NewASTConverter()
+	astConvereter.Enums = enums
+
+	val, err := astConvereter.ProcessAST(file)
+	if err != nil {
+		fmt.Printf("error generating ast: %s", err.Error())
+	}
+
+	val = "package garnethelpers\n\n" + val
+	// Replace the getkeyswithvalue module
+	quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, ]+)\)\)`)
+	val = quotesRegex.ReplaceAllString(val, "p.$2$1($3)")
+
+	return val
+}
+
 // buildCmd represents the build command
 var buildCmd = &cobra.Command{
 	Use:   "build",
@@ -47,97 +80,91 @@ to quickly create a Cobra application.`,
 			fmt.Printf("error generating files: %s", err.Error())
 		}
 
-		// Attack file
-		attack, err := os.ReadFile(filepath.Join(input, "out", "AttackSystem.sol", "AttackSystem.json"))
-		if err != nil {
-			fmt.Printf("error opening the config: %s\n", err.Error())
-			return
-		}
-
-		// Convert to JSON
-		jsonFile := converter.MudConfigToJSON(mudConfigFile)
 		// Enums
+		jsonFile := converter.MudConfigToJSON(mudConfigFile)
 		enums := converter.GetEnumsFromJSON(jsonFile)
-		astConvereter := ast.NewASTConverter()
-		astConvereter.Enums = enums
+		// ast.ProcessSolidityFile(input, "AttackSystem", output, enums)
 
-		val, err := astConvereter.ProcessAST(attack)
-		if err != nil {
-			fmt.Printf("error generating ast: %s", err.Error())
-		}
+		// // Attack file
+		// attack, err := os.ReadFile(filepath.Join(input, "out", "AttackSystem.sol", "AttackSystem.json"))
+		// if err != nil {
+		// 	fmt.Printf("error opening the config: %s\n", err.Error())
+		// 	return
+		// }
+		//
+		// // Convert to JSON
+		// jsonFile := converter.MudConfigToJSON(mudConfigFile)
+		// // Enums
+		// enums := converter.GetEnumsFromJSON(jsonFile)
+		// astConvereter := ast.NewASTConverter()
+		// astConvereter.Enums = enums
+		//
+		// val, err := astConvereter.ProcessAST(attack)
+		// if err != nil {
+		// 	fmt.Printf("error generating ast: %s", err.Error())
+		// }
+		//
+		// if output[len(output)-1] != '/' {
+		// 	output += "/"
+		// }
+		//
+		// val = "package garnethelpers\n\n" + val
+		//
+		// // Replace the getkeyswithvalue module
+		// quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, ]+)\)\)`)
+		// val = quotesRegex.ReplaceAllString(val, "p.$2$1($3)")
 
-		if output[len(output)-1] != '/' {
-			output += "/"
-		}
-
-		val = "package garnethelpers\n\n" + val
-
-		// Replace the getkeyswithvalue module
-		quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, ]+)\)\)`)
-		val = quotesRegex.ReplaceAllString(val, "p.$2$1($3)")
-
-		if err := os.WriteFile(output+"attack.go", []byte(val), 0o600); err != nil {
-			return
-		}
+		// if err := os.WriteFile(output+"attack.go", []byte(val), 0o600); err != nil {
+		// 	return
+		// }
 
 		// LibCover
-		libcover, err := os.ReadFile(filepath.Join(input, "out", "LibCover.sol", "LibCover.json"))
-		if err != nil {
-			fmt.Printf("error opening the config: %s\n", err.Error())
-			return
-		}
-
-		val, err = astConvereter.ProcessAST(libcover)
-		if err != nil {
-			fmt.Printf("error generating ast: %s", err.Error())
-		}
-
-		if output[len(output)-1] != '/' {
-			output += "/"
-		}
-
-		val = "package garnethelpers\n\n" + val
-		if err := os.WriteFile(output+"libcover.go", []byte(val), 0o600); err != nil {
-			return
-		}
-
-		// endMatch
-		endMatch, err := os.ReadFile(filepath.Join(input, "out", "endMatch.sol", "endMatch.json"))
-		if err != nil {
-			fmt.Printf("error opening the config: %s\n", err.Error())
-			return
-		}
-
-		val, err = astConvereter.ProcessAST(endMatch)
-		if err != nil {
-			fmt.Printf("error generating ast: %s", err.Error())
-		}
-
-		if output[len(output)-1] != '/' {
-			output += "/"
-		}
-
-		val = "package garnethelpers\n\n" + val
-		if err := os.WriteFile(output+"endmatch.go", []byte(val), 0o600); err != nil {
-			return
-		}
+		// libcover, err := os.ReadFile(filepath.Join(input, "out", "LibCover.sol", "LibCover.json"))
+		// if err != nil {
+		// 	fmt.Printf("error opening the config: %s\n", err.Error())
+		// 	return
+		// }
+		//
+		// astConvereter := ast.NewASTConverter()
+		// astConvereter.Enums = enums
+		//
+		// val, err := astConvereter.ProcessAST(libcover)
+		// if err != nil {
+		// 	fmt.Printf("error generating ast: %s", err.Error())
+		// }
+		//
+		// if output[len(output)-1] != '/' {
+		// 	output += "/"
+		// }
+		//
+		// val = "package garnethelpers\n\n" + val
+		// if err := os.WriteFile(output+"libcover.go", []byte(val), 0o600); err != nil {
+		// 	return
+		// }
+		//
+		// // endMatch
+		// endMatch, err := os.ReadFile(filepath.Join(input, "out", "endMatch.sol", "endMatch.json"))
+		// if err != nil {
+		// 	fmt.Printf("error opening the config: %s\n", err.Error())
+		// 	return
+		// }
+		//
+		// val, err = astConvereter.ProcessAST(endMatch)
+		// if err != nil {
+		// 	fmt.Printf("error generating ast: %s", err.Error())
+		// }
+		//
+		// if output[len(output)-1] != '/' {
+		// 	output += "/"
+		// }
+		//
+		// val = "package garnethelpers\n\n" + val
+		// if err := os.WriteFile(output+"endmatch.go", []byte(val), 0o600); err != nil {
+		// 	return
+		// }
+		ast.ProcessAllSolidityFiles(input, filepath.Join(input, "src"), output, enums)
 
 	},
-}
-
-func ReadFiles(path string) {
-	files, err := os.ReadDir(path)
-	if err != nil {
-		return
-	}
-
-	for _, file := range files {
-		if file.IsDir() {
-			ReadFiles(filepath.Join(path, file.Name()))
-		} else {
-			fmt.Println(file.Name())
-		}
-	}
 }
 
 func init() {

@@ -79,11 +79,11 @@ func CreateEventsString(tables []Table, c Converter) string {
 	return strings.ReplaceAll(eventsFile, "    ", "\t")
 }
 
-func CreateHelpersString(tables []Table, c Converter) string {
+func CreateHelpersString(tables []Table, c Converter, enums []Enum) string {
 	helpersString := ""
 	// Events
 	for _, v := range tables {
-		helpersString += fmt.Sprintf("\n%s", CreateHelper(v.Key, v.Values, v.Singleton))
+		helpersString += fmt.Sprintf("\n%s", CreateHelper(v.Key, v.Values, v.Singleton, enums))
 	}
 
 	eventsFile := "package garnethelpers\n\nimport (\n\t\"strings\"\n\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)\n\n"
@@ -129,7 +129,7 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 		return err
 	}
 
-	helpers := CreateHelpersString(tables, c)
+	helpers := CreateHelpersString(tables, c, enums)
 	if err := os.WriteFile(path+"helpers.go", []byte(helpers), 0o600); err != nil {
 		return err
 	}

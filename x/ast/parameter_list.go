@@ -3,6 +3,7 @@ package ast
 import (
 	"fmt"
 
+	"github.com/bocha-io/garnetutils/x/converter"
 	"github.com/bocha-io/garnetutils/x/utils"
 	"github.com/buger/jsonparser"
 )
@@ -27,7 +28,7 @@ func (a *ASTConverter) processParameterList(data []byte) (string, error) {
 				return
 			}
 
-			parameters = append(parameters, fmt.Sprintf("%s %s", name, utils.SolidityTypeToGolang(typeName)))
+			parameters = append(parameters, fmt.Sprintf("%s %s", name, utils.SolidityTypeToGolang(typeName, converter.GetEnumKeys(a.Enums))))
 		},
 		"parameters",
 	)

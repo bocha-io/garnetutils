@@ -10,6 +10,33 @@ import (
 
 const FunctionDefinition = "FunctionDefinition"
 
+func (a *ASTConverter) getStatementsFromBody(data []byte) (string, error) {
+	// Function body
+	body, _, _, err := jsonparser.Get(data, "body")
+	if err != nil {
+		return "", err
+	}
+
+	statements := ""
+	_, err = jsonparser.ArrayEach(
+		body,
+		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+			nodeString, errProcess := a.processNodeType(value)
+			if errProcess != nil {
+				return
+			}
+			statements = fmt.Sprintf("%s\n%s", statements, nodeString)
+		},
+		"statements",
+	)
+	if err != nil {
+		return "", err
+	}
+
+	return statements, nil
+
+}
+
 func (a *ASTConverter) processFunctionDefinition(data []byte) (string, error) {
 	functionName, err := jsonparser.GetString(data, "name")
 	if err != nil {
@@ -45,31 +72,18 @@ func (a *ASTConverter) processFunctionDefinition(data []byte) (string, error) {
 		functionReturns = " (" + returnsString + ") {"
 	}
 
-	// Function body
-	body, _, _, err := jsonparser.Get(data, "body")
+	statements, err := a.getStatementsFromBody(data)
 	if err != nil {
 		return "", err
 	}
 
-	statements := ""
-	_, err = jsonparser.ArrayEach(
-		body,
-		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			nodeString, errProcess := a.processNodeType(value)
-			if errProcess != nil {
-				return
-			}
-			statements = fmt.Sprintf("%s\n%s", statements, nodeString)
-		},
-		"statements",
-	)
-	if err != nil {
-		return "", nil
-	}
-
 	fixedStatements := strings.ReplaceAll(statements, "p._msgSender()", "senderAddress")
 	if statements != fixedStatements {
-		functionParameters = strings.Replace(functionParameters, ")", ", senderAddress string)", 1)
+		if functionParameters == " () " {
+			functionParameters = strings.Replace(functionParameters, ")", "senderAddress string)", 1)
+		} else {
+			functionParameters = strings.Replace(functionParameters, ")", ", senderAddress string)", 1)
+		}
 	}
 
 	// statements

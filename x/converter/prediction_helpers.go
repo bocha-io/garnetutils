@@ -21,7 +21,7 @@ func (%s) addressToEntityKey(address string) string{
 	// TODO: add NewPredictionObject function
 }
 
-func CreateHelper(tableName string, fields []Field, sigleton bool) string {
+func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum) string {
 	ret := ""
 	_, returnValues, _ := processFieldsForGetter(fields)
 	returnValues = strings.Replace(returnValues, ", error", "", 1)
@@ -58,7 +58,7 @@ func CreateHelper(tableName string, fields []Field, sigleton bool) string {
 	keysArgs := ""
 	for k, v := range fields {
 		args += v.Key
-		keysArgs += v.Key + " " + utils.SolidityTypeToGolang(v.Type)
+		keysArgs += v.Key + " " + utils.SolidityTypeToGolang(v.Type, GetEnumKeys(enums))
 		if len(fields)-1 != k {
 			args += ", "
 			keysArgs += ", "

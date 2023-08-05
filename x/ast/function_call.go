@@ -58,6 +58,9 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 			if funcType == "bytes32" {
 				funcType = "string"
 			}
+			if funcType == "uint32" {
+				funcType = "int64"
+			}
 		}
 		return funcType + ret, nil
 
@@ -148,6 +151,46 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 		}
 
 		return expression + ret, nil
+	} else if kind == "structConstructorCall" {
+		// expression
+		expression, _, _, err := jsonparser.Get(data, "expression")
+		if err != nil {
+			return "", err
+		}
+
+		expresionValue, err := a.processNodeType(expression)
+		if err != nil {
+			return "", err
+		}
+
+		ret := "New" + expresionValue
+
+		// arguments
+		arguments := []string{}
+		_, err = jsonparser.ArrayEach(
+			data,
+			func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
+				argument, errProcess := a.processNodeType(value)
+				if errProcess != nil {
+					return
+				}
+				arguments = append(arguments, argument)
+			},
+			"arguments",
+		)
+		if err != nil {
+			return "", err
+		}
+
+		ret += "("
+		for k, v := range arguments {
+			ret += v
+			if k != len(arguments)-1 {
+				ret += ", "
+			}
+		}
+		ret += ")"
+		return ret, nil
 	}
 
 	return "", fmt.Errorf("%s function kind not processed", kind)

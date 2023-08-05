@@ -15,3 +15,11 @@ type Enum struct {
 	Key    string
 	Values []string
 }
+
+func GetEnumKeys(enums []Enum) []string {
+	ret := []string{}
+	for _, v := range enums {
+		ret = append(ret, v.Key)
+	}
+	return ret
+}
