@@ -3,6 +3,8 @@ package converter
 import (
 	"fmt"
 	"strings"
+
+	"github.com/bocha-io/garnetutils/x/utils"
 )
 
 const PredictionObject = "Prediction"
@@ -53,10 +55,13 @@ func CreateHelper(tableName string, fields []Field, sigleton bool) string {
 
 	params := createSettersReturnsValues(fields)
 	args := ""
+	keysArgs := ""
 	for k, v := range fields {
 		args += v.Key
+		keysArgs += v.Key + " " + utils.SolidityTypeToGolang(v.Type)
 		if len(fields)-1 != k {
 			args += ", "
+			keysArgs += ", "
 		}
 	}
 
@@ -73,10 +78,13 @@ func (p %s) %sDeleteRecord(ID string) {
 `, PredictionObject, tableName, tableName)
 
 	ret += fmt.Sprintf(`
-func (p %s) getKeys%s(ID string) {
-    p.events = append(p.events, Delete%sEvent(ID))
+func (p %s) %sKeys(%s) []string {
+    if !BlockchainConnection.active {
+        panic("game object is not active")
+    }
+    return BlockchainConnection.getRows%s(%s)
 }
-`, PredictionObject, tableName, tableName)
+`, PredictionObject, tableName, keysArgs, tableName, args)
 
 	return ret
 }

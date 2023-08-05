@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/bocha-io/garnetutils/x/ast"
 	"github.com/bocha-io/garnetutils/x/converter"
@@ -70,6 +71,11 @@ to quickly create a Cobra application.`,
 		}
 
 		val = "package garnethelpers\n\n" + val
+
+		// Replace the getkeyswithvalue module
+		quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, ]+)\)\)`)
+		val = quotesRegex.ReplaceAllString(val, "p.$2$1($3)")
+
 		if err := os.WriteFile(output+"attack.go", []byte(val), 0o600); err != nil {
 			return
 		}

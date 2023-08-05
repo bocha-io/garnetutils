@@ -141,7 +141,7 @@ func (c Converter) GetRows(tableName string, fields []Field, singleton bool) str
 	}
 
 	firstLine := fmt.Sprintf(
-		`func (g %s) getRows%s(tableName string, %s) []string{
+		`func (g %s) getRows%s(%s) []string{
 	table := g.world.GetTableByName("%s")
 	rows := g.db.GetRows(table)
  	for k, fields := range rows {`,
