@@ -464,7 +464,7 @@ func TestProcessBlock(t *testing.T) {
 }
 `
 
-	val, err := NewASTConverter().processBlock([]byte(testData))
+	val, err := NewConverter().processBlock([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

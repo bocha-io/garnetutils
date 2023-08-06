@@ -20,9 +20,9 @@ func TestLiteral_number(t *testing.T) {
 "value": "0"
 }`
 
-	expected := "0"
+	expected := "int64(0)"
 
-	val, err := NewASTConverter().processLiteral([]byte(testData))
+	val, err := NewConverter().processLiteral([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}
@@ -51,7 +51,7 @@ func TestLiteral_string(t *testing.T) {
 
 	expected := "\"AttackDamage\""
 
-	val, err := NewASTConverter().processLiteral([]byte(testData))
+	val, err := NewConverter().processLiteral([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}
@@ -81,7 +81,7 @@ func TestLiteral_bool(t *testing.T) {
 
 	expected := "true"
 
-	val, err := NewASTConverter().processLiteral([]byte(testData))
+	val, err := NewConverter().processLiteral([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

@@ -33,6 +33,8 @@ func SolidityTypeToGolang(val string, enums []string) string {
 		return brackets + "int64"
 	case "uint32":
 		return brackets + "int64"
+	case "int32":
+		return brackets + "int64"
 	case "uint8":
 		return brackets + "int64"
 	default:

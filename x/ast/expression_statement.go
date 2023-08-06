@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const ExpressionStatement = "ExpressionStatement"
 
-func (a *ASTConverter) processExpressionStatement(data []byte) (string, error) {
+func (a *Converter) processExpressionStatement(data []byte) (string, error) {
 	expression, _, _, err := jsonparser.Get(data, "expression")
 	if err != nil {
 		return "", err

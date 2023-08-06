@@ -48,7 +48,7 @@ func TestTupleExpression(t *testing.T) {
 
 	expected := "enemyX, enemyY"
 
-	val, err := NewASTConverter().processTupleExpression([]byte(testData))
+	val, err := NewConverter().processTupleExpression([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

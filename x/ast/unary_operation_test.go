@@ -35,7 +35,7 @@ func TestUnaryOperation(t *testing.T) {
 
 	expected := "!spawned"
 
-	val, err := NewASTConverter().processUnaryOperation([]byte(testData))
+	val, err := NewConverter().processUnaryOperation([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

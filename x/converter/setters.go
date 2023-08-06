@@ -5,12 +5,12 @@ import "fmt"
 func createSettersReturnsValues(fields []Field) string {
 	returnValues := ""
 	for _, v := range fields {
-		goType := int64Type
+		goType := Int64Type
 		switch v.Type {
-		case bytes32Type:
+		case Bytes32Type:
 			goType = "string"
-		case boolType:
-			goType = boolType
+		case BoolType:
+			goType = BoolType
 		}
 		// Function return types
 		if returnValues == "" {
@@ -37,9 +37,9 @@ func Create%sEvent(ID string, %s) data.MudEvent {
 		// Uint, Int and Enums will return int64 in go
 		dataString := fmt.Sprintf(`data.UintField{Data: *big.NewInt(%s)}`, v.Key)
 		switch v.Type {
-		case bytes32Type:
+		case Bytes32Type:
 			dataString = fmt.Sprintf(`data.NewBytesField(%s)`, v.Key)
-		case boolType:
+		case BoolType:
 			dataString = fmt.Sprintf(`data.BoolField{Data: %s}`, v.Key)
 		}
 		fieldsEvents += fmt.Sprintf("            {Key: \"%s\", Data: %s},\n", v.Key, dataString)

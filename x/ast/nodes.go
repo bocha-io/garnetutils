@@ -4,7 +4,7 @@ import (
 	"github.com/buger/jsonparser"
 )
 
-func (a *ASTConverter) processNodeType(data []byte) (string, error) {
+func (a *Converter) processNodeType(data []byte) (string, error) {
 	nodeType, err := jsonparser.GetString(data, "nodeType")
 	if err != nil {
 		return "", err

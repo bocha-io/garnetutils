@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const ForStatement = "ForStatement"
 
-func (a *ASTConverter) processForStatement(data []byte) (string, error) {
+func (a *Converter) processForStatement(data []byte) (string, error) {
 	ret := "for "
 	// initializationExpression
 	initializationExpressionObject, _, _, err := jsonparser.Get(data, "initializationExpression")

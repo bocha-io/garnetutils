@@ -209,13 +209,13 @@ func TestIfStatement(t *testing.T) {
 `
 
 	expected := `if enemyX > playerX {
-enemyX -= 5
+enemyX -= int64(5)
 } else {
 if enemyX < playerX {
-enemyX += 5
+enemyX += int64(5)
 }
 }`
-	val, err := NewASTConverter().processIfStatement([]byte(testData))
+	val, err := NewConverter().processIfStatement([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

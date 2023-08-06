@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const IfStatement = "IfStatement"
 
-func (a *ASTConverter) processIfStatement(data []byte) (string, error) {
+func (a *Converter) processIfStatement(data []byte) (string, error) {
 	ret := "if "
 	// condition
 

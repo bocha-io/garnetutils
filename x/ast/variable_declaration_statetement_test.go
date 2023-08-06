@@ -209,7 +209,7 @@ func TestProcessVariableDeclarationStatement(t *testing.T) {
 }
 `
 
-	val, err := NewASTConverter().processVariableDeclarationStatement([]byte(testData))
+	val, err := NewConverter().processVariableDeclarationStatement([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

@@ -10,7 +10,7 @@ import (
 
 const ParameterList = "ParameterList"
 
-func (a *ASTConverter) processParameterList(data []byte) (string, error) {
+func (a *Converter) processParameterList(data []byte) (string, error) {
 	parameters := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,

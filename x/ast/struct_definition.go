@@ -15,7 +15,7 @@ type member struct {
 	typeValue string
 }
 
-func (a *ASTConverter) processStructDefinition(data []byte) (string, error) {
+func (a *Converter) processStructDefinition(data []byte) (string, error) {
 	members := []member{}
 	_, err := jsonparser.ArrayEach(
 		data,
@@ -49,7 +49,7 @@ func (a *ASTConverter) processStructDefinition(data []byte) (string, error) {
 		}
 	}
 	constructorParams += ")"
-	ret += "}\nfunc New" + structName + constructorParams + " " + structName + " {\ntemp:=" + structName + "{}\n" + initValues + "\nreturn temp\n}"
+	ret += "}\nfunc New" + structName + constructorParams + " " + structName + " {\ntemp:=" + structName + "{}\n" + initValues + "return temp\n}\n"
 
 	return ret, nil
 }

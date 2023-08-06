@@ -45,9 +45,9 @@ func TestIndexAccess(t *testing.T) {
   }
 }`
 
-	expected := "_schema[0]"
+	expected := "_schema[int64(0)]"
 
-	val, err := NewASTConverter().processIndexAccess([]byte(testData))
+	val, err := NewConverter().processIndexAccess([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

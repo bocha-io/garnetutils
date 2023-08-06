@@ -8,7 +8,7 @@ import (
 
 const Literal = "Literal"
 
-func (a *ASTConverter) processLiteral(data []byte) (string, error) {
+func (a *Converter) processLiteral(data []byte) (string, error) {
 	kind, err := jsonparser.GetString(data, "kind")
 	if err != nil {
 		return "", err

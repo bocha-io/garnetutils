@@ -33,10 +33,9 @@ func TestMultiValueTable(t *testing.T) {
 		{Key: "test2", Type: "int32"},
 		{Key: "test3", Type: "int32"},
 		{Key: "test4", Type: "bytes32"},
-	})
+	}, false)
 	value := `
 func (g *GameState) getProjectile(key string) (bool, int64, int64, string, error) {
-
     fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Projectile")
     if err != nil {
         return false, 0, 0, "", err

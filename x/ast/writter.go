@@ -70,7 +70,7 @@ func SaveGoFile(outputFolder string, fileName string, fileContent string) error 
 }
 
 func GenerateGoFileFromSolidy(file []byte, enums []converter.Enum) (string, error) {
-	astConvereter := NewASTConverter()
+	astConvereter := NewConverter()
 	astConvereter.Enums = enums
 
 	val, err := astConvereter.ProcessAST(file)

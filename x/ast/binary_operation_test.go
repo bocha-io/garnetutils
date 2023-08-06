@@ -79,7 +79,7 @@ func TestProcessBinaryOperation(t *testing.T) {
 `
 
 	expected := "targetX + targetSize >= x"
-	val, err := NewASTConverter().processBinaryOperation([]byte(testData))
+	val, err := NewConverter().processBinaryOperation([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

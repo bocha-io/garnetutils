@@ -17,7 +17,7 @@ func TestTypeName_elementary(t *testing.T) {
 
 	expected := "bytes32"
 
-	val, err := NewASTConverter().processElementaryTypeName([]byte(testData))
+	val, err := NewConverter().processElementaryTypeName([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,7 +47,7 @@ func TestTypeName_userDefined(t *testing.T) {
 
 	expected := "PlacedCardsData"
 
-	val, err := NewASTConverter().processUserDefinedTypeName([]byte(testData))
+	val, err := NewConverter().processUserDefinedTypeName([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}
@@ -80,7 +80,7 @@ func TestTypeName_arrayTypeName(t *testing.T) {
 
 	expected := "[]bytes32"
 
-	val, err := NewASTConverter().processArrayTypeName([]byte(testData))
+	val, err := NewConverter().processArrayTypeName([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

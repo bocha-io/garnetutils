@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const Assignment = "Assignment"
 
-func (a *ASTConverter) processAssignment(data []byte) (string, error) {
+func (a *Converter) processAssignment(data []byte) (string, error) {
 	operator, err := jsonparser.GetString(data, "operator")
 	if err != nil {
 		return "", err

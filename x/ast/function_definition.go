@@ -10,7 +10,7 @@ import (
 
 const FunctionDefinition = "FunctionDefinition"
 
-func (a *ASTConverter) getStatementsFromBody(data []byte) (string, error) {
+func (a *Converter) getStatementsFromBody(data []byte) (string, error) {
 	// Function body
 	body, _, _, err := jsonparser.Get(data, "body")
 	if err != nil {
@@ -25,7 +25,11 @@ func (a *ASTConverter) getStatementsFromBody(data []byte) (string, error) {
 			if errProcess != nil {
 				return
 			}
-			statements = fmt.Sprintf("%s\n%s", statements, nodeString)
+			if statements == "" {
+				statements = nodeString
+			} else {
+				statements = fmt.Sprintf("%s\n%s", statements, nodeString)
+			}
 		},
 		"statements",
 	)
@@ -36,7 +40,7 @@ func (a *ASTConverter) getStatementsFromBody(data []byte) (string, error) {
 	return statements, nil
 }
 
-func (a *ASTConverter) processFunctionDefinition(data []byte) (string, error) {
+func (a *Converter) processFunctionDefinition(data []byte) (string, error) {
 	functionName, err := jsonparser.GetString(data, "name")
 	if err != nil {
 		return "", err
@@ -86,5 +90,5 @@ func (a *ASTConverter) processFunctionDefinition(data []byte) (string, error) {
 	}
 
 	// statements
-	return fmt.Sprintf("%s%s%s\n%s\n}", functionHeader, functionParameters, functionReturns, fixedStatements), nil
+	return fmt.Sprintf("%s%s%s\n%s\n}\n", functionHeader, functionParameters, functionReturns, fixedStatements), nil
 }

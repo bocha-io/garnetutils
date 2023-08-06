@@ -85,19 +85,19 @@ func GenerateGoImports(symbols []SymbolImport) string {
 	return ret
 }
 
-type ASTConverter struct {
+type Converter struct {
 	imports []SymbolImport
 	Enums   []converter.Enum
 }
 
-func NewASTConverter() *ASTConverter {
-	return &ASTConverter{
+func NewConverter() *Converter {
+	return &Converter{
 		imports: []SymbolImport{},
 		Enums:   []converter.Enum{},
 	}
 }
 
-func (a *ASTConverter) ProcessAST(data []byte) (string, error) {
+func (a *Converter) ProcessAST(data []byte) (string, error) {
 	definition := []byte{}
 	nodes, err := getNodes(data)
 	if err != nil {

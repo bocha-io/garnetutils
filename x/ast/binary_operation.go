@@ -1,6 +1,9 @@
 package ast
 
-import "github.com/buger/jsonparser"
+import (
+	"github.com/bocha-io/garnetutils/x/converter"
+	"github.com/buger/jsonparser"
+)
 
 const BinaryOperation = "BinaryOperation"
 
@@ -18,7 +21,7 @@ const (
 	OperatorE   = "=="
 )
 
-func (a *ASTConverter) processBranches(data []byte) (string, string, error) {
+func (a *Converter) processBranches(data []byte) (string, string, error) {
 	leftExpression, _, _, err := jsonparser.Get(data, "leftExpression")
 	if err != nil {
 		return "", "", err
@@ -31,7 +34,7 @@ func (a *ASTConverter) processBranches(data []byte) (string, string, error) {
 	// special case, leftExpression is bytes32 and rightExpression is number
 	isSpecialCase := false
 	leftType, err := jsonparser.GetString(data, "leftExpression", "typeDescriptions", "typeString")
-	if err == nil && leftType == "bytes32" {
+	if err == nil && leftType == converter.Bytes32Type {
 		isSpecialCase = true
 	}
 
@@ -50,7 +53,7 @@ func (a *ASTConverter) processBranches(data []byte) (string, string, error) {
 	return leftside, rightSide, err
 }
 
-func (a *ASTConverter) processBinaryOperation(data []byte) (string, error) {
+func (a *Converter) processBinaryOperation(data []byte) (string, error) {
 	operator, err := jsonparser.GetString(data, "operator")
 	if err != nil {
 		return "", err

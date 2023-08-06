@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const Block = "Block"
 
-func (a *ASTConverter) processBlock(data []byte) (string, error) {
+func (a *Converter) processBlock(data []byte) (string, error) {
 	statements := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,

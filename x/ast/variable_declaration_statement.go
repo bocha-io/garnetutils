@@ -13,7 +13,7 @@ const (
 	VariableDeclarationStatement = "VariableDeclarationStatement"
 )
 
-func (a *ASTConverter) BytesToVariableDeclaration(value []byte) (name string, typeValue string, err error) {
+func (a *Converter) BytesToVariableDeclaration(value []byte) (name string, typeValue string, err error) {
 	err = nil
 	if string(value) == "null" {
 		return "_", "_", nil
@@ -34,13 +34,13 @@ func (a *ASTConverter) BytesToVariableDeclaration(value []byte) (name string, ty
 	return name, typeName, err
 }
 
-func (a *ASTConverter) processVariableDeclarationStatement(data []byte) (string, error) {
+func (a *Converter) processVariableDeclarationStatement(data []byte) (string, error) {
 	declarations := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			name, typeName, err := a.BytesToVariableDeclaration(value)
-			if err != nil {
+			name, typeName, errInternal := a.BytesToVariableDeclaration(value)
+			if errInternal != nil {
 				return
 			}
 			declarations = append(declarations, fmt.Sprintf("%s %s", typeName, name))

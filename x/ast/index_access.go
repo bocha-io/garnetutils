@@ -8,7 +8,7 @@ import (
 
 const IndexAccess = "IndexAccess"
 
-func (a *ASTConverter) processIndexAccess(data []byte) (string, error) {
+func (a *Converter) processIndexAccess(data []byte) (string, error) {
 	// Base
 	baseExpression, _, _, err := jsonparser.Get(data, "baseExpression")
 	if err != nil {

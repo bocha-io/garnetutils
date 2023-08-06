@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const MemberAccess = "MemberAccess"
 
-func (a *ASTConverter) processMemberAccess(data []byte) (string, error) {
+func (a *Converter) processMemberAccess(data []byte) (string, error) {
 	member, err := jsonparser.GetString(data, "memberName")
 	if err != nil {
 		return "", err

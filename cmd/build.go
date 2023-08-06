@@ -30,7 +30,7 @@ import (
 //	    output += "/"
 //	}
 func ProcessFile(file []byte, enums []converter.Enum) string {
-	astConvereter := ast.NewASTConverter()
+	astConvereter := ast.NewConverter()
 	astConvereter.Enums = enums
 
 	val, err := astConvereter.ProcessAST(file)

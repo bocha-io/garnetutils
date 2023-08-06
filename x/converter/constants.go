@@ -7,8 +7,8 @@ const (
 	tablesName         = "tables"
 	enumsName          = "enums"
 
-	boolType    = "bool"
-	bytes32Type = "bytes32"
-	stringType  = "string"
-	int64Type   = "int64"
+	BoolType    = "bool"
+	Bytes32Type = "bytes32"
+	StringType  = "string"
+	Int64Type   = "int64"
 )

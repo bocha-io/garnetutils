@@ -35,7 +35,7 @@ func CreateGettersString(tables []Table, c Converter) string {
 	// Getters
 	for _, v := range tables {
 		functionsString += fmt.Sprintf("\n%s", c.MultiValueTable(v.Key, v.Values, v.Singleton))
-		functionsString += fmt.Sprintf("\n%s", c.GetRows(v.Key, v.Values, v.Singleton))
+		functionsString += fmt.Sprintf("\n%s", c.GetRows(v.Key, v.Values))
 	}
 
 	gettersFile := "package garnethelpers\n\nimport (\n"
@@ -79,7 +79,7 @@ func CreateEventsString(tables []Table, c Converter) string {
 	return strings.ReplaceAll(eventsFile, "    ", "\t")
 }
 
-func CreateHelpersString(tables []Table, c Converter, enums []Enum) string {
+func CreateHelpersString(tables []Table, enums []Enum) string {
 	helpersString := ""
 	// Events
 	for _, v := range tables {
@@ -129,7 +129,7 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 		return err
 	}
 
-	helpers := CreateHelpersString(tables, c, enums)
+	helpers := CreateHelpersString(tables, enums)
 	if err := os.WriteFile(path+"helpers.go", []byte(helpers), 0o600); err != nil {
 		return err
 	}
@@ -146,7 +146,6 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 				enumsString += ")\n"
 			}
 		}
-
 	}
 	if err := os.WriteFile(path+"enums.go", []byte(enumsString), 0o600); err != nil {
 		return err

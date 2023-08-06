@@ -26,14 +26,14 @@ func processFieldsForGetter(fields []Field) (string, string, []string) {
 	goFields := []string{}
 	for _, v := range fields {
 		// Uint, Int and Enums will return int64 in go
-		goType := int64Type
+		goType := Int64Type
 		var tempReturn string
 		switch v.Type {
-		case bytes32Type:
-			goType = stringType
+		case Bytes32Type:
+			goType = StringType
 			tempReturn = "\"\""
-		case boolType:
-			goType = boolType
+		case BoolType:
+			goType = BoolType
 			tempReturn = "false"
 		default:
 			tempReturn = "0"
@@ -93,19 +93,19 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 	validReturn := ""
 	for k, v := range goFields {
 		switch v {
-		case int64Type:
+		case Int64Type:
 			getters = fmt.Sprintf(`%s
     field%d, err := strconv.ParseInt(fields[%d].Data.String(), 10, 32)
     if err != nil {
         return %s, err
     }`, getters, k, k, errorReturn)
 
-		case boolType:
+		case BoolType:
 			getters = fmt.Sprintf(`%s
     field%d := fields[%d].Data.String() == "true"`,
 				getters, k, k)
 
-		case stringType:
+		case StringType:
 			getters = fmt.Sprintf(`%s
     field%d := strings.ReplaceAll(fields[%d].Data.String(), "\"", "")`,
 				getters, k, k)
@@ -129,7 +129,7 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 		firstLine, getValues, checkLenght, getters, validReturn)
 }
 
-func (c Converter) GetRows(tableName string, fields []Field, singleton bool) string {
+func (c Converter) GetRows(tableName string, fields []Field) string {
 	_, _, goFields := processFieldsForGetter(fields)
 
 	args := ""
@@ -159,7 +159,7 @@ func (c Converter) GetRows(tableName string, fields []Field, singleton bool) str
 	getters := ""
 	for k, v := range goFields {
 		switch v {
-		case int64Type:
+		case Int64Type:
 			getters = fmt.Sprintf(`%s
         field%d, err := strconv.ParseInt(fields[%d].Data.String(), 10, 32)
         if err != nil {
@@ -169,14 +169,14 @@ func (c Converter) GetRows(tableName string, fields []Field, singleton bool) str
             continue
         }`, getters, k, k, k, k)
 
-		case boolType:
+		case BoolType:
 			getters = fmt.Sprintf(`%s
         field%d := fields[%d].Data.String() == "true"
         if field%d != arg%d {
             continue
         }`, getters, k, k, k, k)
 
-		case stringType:
+		case StringType:
 			getters = fmt.Sprintf(`%s
         field%d := strings.ReplaceAll(fields[%d].Data.String(), "\"", "")
         if field%d != arg%d {

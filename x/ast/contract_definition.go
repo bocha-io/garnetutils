@@ -8,7 +8,7 @@ import (
 
 const ContractDefinition = "ContractDefinition"
 
-func (a *ASTConverter) processContractDefinition(data []byte) (string, error) {
+func (a *Converter) processContractDefinition(data []byte) (string, error) {
 	ret := ""
 	_, err := jsonparser.ArrayEach(
 		data,

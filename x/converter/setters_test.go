@@ -11,7 +11,7 @@ func TestCreateEventFunction(t *testing.T) {
 		{Key: "game", Type: "bytes32"},
 	})
 	value := `
-func CreateProjectileEvent(ID string, spawned bool, x int64, y int64, game []byte) data.MudEvent {
+func CreateProjectileEvent(ID string, spawned bool, x int64, y int64, game string) data.MudEvent {
     return data.MudEvent{
         Table: "Projectile",
         Key:   ID,
@@ -22,7 +22,16 @@ func CreateProjectileEvent(ID string, spawned bool, x int64, y int64, game []byt
             {Key: "game", Data: data.NewBytesField(game)},
         },
     }
-}`
+}
+
+func DeleteProjectileEvent(ID string) data.MudEvent {
+    return data.MudEvent{
+        Table:  "Projectile",
+        Key:    ID,
+        Fields: []data.Field{},
+    }
+}
+`
 	if generated != value {
 		t.Fatalf("error generating event function: %s, %s", generated, value)
 	}

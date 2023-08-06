@@ -5,17 +5,20 @@ import (
 	"strings"
 
 	"github.com/buger/jsonparser"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 const FunctionCall = "FunctionCall"
 
-func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
+func (a *Converter) processFunctionCall(data []byte) (string, error) {
 	kind, err := jsonparser.GetString(data, "kind")
 	if err != nil {
 		return "", err
 	}
 
-	if kind == "typeConversion" {
+	switch kind {
+	case "typeConversion":
 		// nodeType: ElementaryTypeNameExpression
 		// arguments
 		arguments := []string{}
@@ -64,7 +67,7 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 		}
 		return funcType + ret, nil
 
-	} else if kind == "functionCall" {
+	case "functionCall":
 		// arguments
 		arguments := []string{}
 		_, err := jsonparser.ArrayEach(
@@ -123,7 +126,8 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 					splited := strings.Split(expression, ".")
 					if len(splited) == 2 {
 						if splited[0] == symbolName {
-							expression = "p." + splited[0] + strings.Title(splited[1])
+							caser := cases.Title(language.English)
+							expression = "p." + splited[0] + caser.String(splited[1])
 							isMUDTable = true
 							break
 						}
@@ -151,7 +155,7 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 		}
 
 		return expression + ret, nil
-	} else if kind == "structConstructorCall" {
+	case "structConstructorCall":
 		// expression
 		expression, _, _, err := jsonparser.Get(data, "expression")
 		if err != nil {
@@ -191,7 +195,7 @@ func (a *ASTConverter) processFunctionCall(data []byte) (string, error) {
 		}
 		ret += ")"
 		return ret, nil
+	default:
+		return "", fmt.Errorf("%s function kind not processed", kind)
 	}
-
-	return "", fmt.Errorf("%s function kind not processed", kind)
 }
