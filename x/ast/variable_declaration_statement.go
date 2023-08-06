@@ -13,7 +13,9 @@ const (
 	VariableDeclarationStatement = "VariableDeclarationStatement"
 )
 
-func (a *Converter) BytesToVariableDeclaration(value []byte) (name string, typeValue string, err error) {
+func (a *Converter) BytesToVariableDeclaration(
+	value []byte,
+) (name string, typeValue string, err error) {
 	err = nil
 	if string(value) == "null" {
 		return "_", "_", nil
@@ -75,7 +77,10 @@ func (a *Converter) processVariableDeclarationStatement(data []byte) (string, er
 				// 	}
 				// }
 				if len(splited) == 2 {
-					varType := utils.SolidityTypeToGolang(splited[0], converter.GetEnumKeys(a.Enums))
+					varType := utils.SolidityTypeToGolang(
+						splited[0],
+						converter.GetEnumKeys(a.Enums),
+					)
 					val += "var " + splited[1] + " " + varType + "\n"
 				}
 			}

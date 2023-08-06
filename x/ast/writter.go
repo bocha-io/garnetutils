@@ -10,7 +10,12 @@ import (
 	"github.com/bocha-io/garnetutils/x/converter"
 )
 
-func ProcessSolidityFiles(basePath string, fileName string, outputFolder string, enums []converter.Enum) error {
+func ProcessSolidityFiles(
+	basePath string,
+	fileName string,
+	outputFolder string,
+	enums []converter.Enum,
+) error {
 	path := filepath.Join(basePath, "out", fileName+".sol")
 	files, err := os.ReadDir(path)
 	if err != nil {
@@ -30,7 +35,12 @@ func ProcessSolidityFiles(basePath string, fileName string, outputFolder string,
 	return nil
 }
 
-func ProcessSolidityFile(path string, fileName string, outputFolder string, enums []converter.Enum) error {
+func ProcessSolidityFile(
+	path string,
+	fileName string,
+	outputFolder string,
+	enums []converter.Enum,
+) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -59,13 +69,20 @@ func GenerateGoFileFromSolidy(file []byte, enums []converter.Enum) (string, erro
 
 	val = "package garnethelpers\n\n" + val
 	// Replace the getkeyswithvalue module
-	quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, \-\+\*\\\(\)]+)\)\)`)
+	quotesRegex := regexp.MustCompile(
+		`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, \-\+\*\\\(\)]+)\)\)`,
+	)
 	val = quotesRegex.ReplaceAllString(val, "p.$2$1($3)")
 
 	return val, nil
 }
 
-func ProcessAllSolidityFiles(basePath string, currentPath string, destination string, enums []converter.Enum) {
+func ProcessAllSolidityFiles(
+	basePath string,
+	currentPath string,
+	destination string,
+	enums []converter.Enum,
+) {
 	files, err := os.ReadDir(currentPath)
 	if err != nil {
 		panic(err)
@@ -76,7 +93,12 @@ func ProcessAllSolidityFiles(basePath string, currentPath string, destination st
 			if file.Name() == "tables" || file.Name() == "codegen" || file.Name() == "world" {
 				continue
 			}
-			ProcessAllSolidityFiles(basePath, filepath.Join(currentPath, file.Name()), destination, enums)
+			ProcessAllSolidityFiles(
+				basePath,
+				filepath.Join(currentPath, file.Name()),
+				destination,
+				enums,
+			)
 		} else {
 			// Ignore interfaces
 			if file.Name()[0] == 'I' {
