@@ -5,6 +5,7 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/bocha-io/garnetutils/x/ast"
@@ -55,6 +56,9 @@ var alphaCmd = &cobra.Command{
 		jsonFile := converter.MudConfigToJSON(mudConfigFile)
 		enums := converter.GetEnumsFromJSON(jsonFile)
 		ast.ProcessAllSolidityFiles(input, filepath.Join(input, "src"), output, enums)
+
+		// Try to fmt the files if the user has gofmt installed
+		_, _ = exec.Command("gofmt", "-w", output).Output()
 	},
 }
 
