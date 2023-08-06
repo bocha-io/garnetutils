@@ -28,7 +28,14 @@ func (a *Converter) processParameterList(data []byte) (string, error) {
 				return
 			}
 
-			parameters = append(parameters, fmt.Sprintf("%s %s", name, utils.SolidityTypeToGolang(typeName, converter.GetEnumKeys(a.Enums))))
+			parameters = append(
+				parameters,
+				fmt.Sprintf(
+					"%s %s",
+					name,
+					utils.SolidityTypeToGolang(typeName, converter.GetEnumKeys(a.Enums)),
+				),
+			)
 		},
 		"parameters",
 	)

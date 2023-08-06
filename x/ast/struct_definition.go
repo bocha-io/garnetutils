@@ -41,8 +41,16 @@ func (a *Converter) processStructDefinition(data []byte) (string, error) {
 	constructorParams := "("
 	initValues := ""
 	for k, v := range members {
-		ret += fmt.Sprintf("%s %s\n", v.name, utils.SolidityTypeToGolang(v.typeValue, converter.GetEnumKeys(a.Enums)))
-		constructorParams += fmt.Sprintf("%s %s", v.name, utils.SolidityTypeToGolang(v.typeValue, converter.GetEnumKeys(a.Enums)))
+		ret += fmt.Sprintf(
+			"%s %s\n",
+			v.name,
+			utils.SolidityTypeToGolang(v.typeValue, converter.GetEnumKeys(a.Enums)),
+		)
+		constructorParams += fmt.Sprintf(
+			"%s %s",
+			v.name,
+			utils.SolidityTypeToGolang(v.typeValue, converter.GetEnumKeys(a.Enums)),
+		)
 		initValues += "temp." + v.name + "=" + v.name + "\n"
 		if k != len(members)-1 {
 			constructorParams += ", "

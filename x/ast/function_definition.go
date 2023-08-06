@@ -83,12 +83,23 @@ func (a *Converter) processFunctionDefinition(data []byte) (string, error) {
 	fixedStatements := strings.ReplaceAll(statements, "p._msgSender()", "senderAddress")
 	if statements != fixedStatements {
 		if functionParameters == " () " {
-			functionParameters = strings.Replace(functionParameters, ")", "senderAddress string)", 1)
+			functionParameters = strings.Replace(
+				functionParameters,
+				")",
+				"senderAddress string)",
+				1,
+			)
 		} else {
 			functionParameters = strings.Replace(functionParameters, ")", ", senderAddress string)", 1)
 		}
 	}
 
 	// statements
-	return fmt.Sprintf("%s%s%s\n%s\n}\n", functionHeader, functionParameters, functionReturns, fixedStatements), nil
+	return fmt.Sprintf(
+		"%s%s%s\n%s\n}\n",
+		functionHeader,
+		functionParameters,
+		functionReturns,
+		fixedStatements,
+	), nil
 }

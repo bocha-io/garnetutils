@@ -77,11 +77,14 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 		returnValues,
 		key,
 	)
-	getValues := fmt.Sprintf(`    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
+	getValues := fmt.Sprintf(
+		`    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
     if err != nil {
         return %s, err
     }`,
-		tableName, errorReturn)
+		tableName,
+		errorReturn,
+	)
 
 	checkLenght := fmt.Sprintf(`
     if len(fields) != %d {
