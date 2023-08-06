@@ -29,5 +29,11 @@ func (a *ASTConverter) processArrayTypeName(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("[]%s", typeString), nil
+
+	length, err := jsonparser.GetString(data, "length", "value")
+	if err != nil {
+		return fmt.Sprintf("[]%s", typeString), nil
+	}
+
+	return fmt.Sprintf("[%s]%s", length, typeString), nil
 }

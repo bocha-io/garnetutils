@@ -9,7 +9,12 @@ func SolidityTypeToGolang(val string, enums []string) string {
 	splitted := strings.Split(val, "]")
 	if len(splitted) == 2 {
 		val = splitted[1]
-		brackets = "[]"
+		length := strings.Split(splitted[0], "[")
+		if len(length) == 2 {
+			brackets = "[" + length[1] + "]"
+		} else {
+			brackets = "[]"
+		}
 	}
 	val = strings.Trim(val, " ")
 

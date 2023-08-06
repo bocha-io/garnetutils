@@ -163,7 +163,6 @@ to quickly create a Cobra application.`,
 		// 	return
 		// }
 		ast.ProcessAllSolidityFiles(input, filepath.Join(input, "src"), output, enums)
-
 	},
 }
 

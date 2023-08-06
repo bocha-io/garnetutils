@@ -80,7 +80,7 @@ func GenerateGoFileFromSolidy(file []byte, enums []converter.Enum) (string, erro
 
 	val = "package garnethelpers\n\n" + val
 	// Replace the getkeyswithvalue module
-	quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, ]+)\)\)`)
+	quotesRegex := regexp.MustCompile(`p\.get(Keys)WithValue\(([A-Za-z]+)TableId, p\.[A-Za-z]+\(([A-Za-z0-9, \-\+\*\\\(\)]+)\)\)`)
 	val = quotesRegex.ReplaceAllString(val, "p.$2$1($3)")
 
 	return val, nil

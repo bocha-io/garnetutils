@@ -61,6 +61,19 @@ func (a *ASTConverter) processVariableDeclarationStatement(data []byte) (string,
 			val := ""
 			for _, v := range declarations {
 				splited := strings.SplitAfter(v, " ")
+
+				// TODO: make sure that this change does not break anything
+				// Logic moved to the SolidityTypeToGolang function
+				// arrayIndex := regexp.MustCompile(`\[(\d+)\]`)
+				// fmt.Println(len(arrayIndex.Split(v, -1)))
+				// if len(arrayIndex.Split(v, -1)) > 1 {
+				// 	if len(splited) == 2 {
+				// 		varType := utils.SolidityTypeToGolang(splited[0], converter.GetEnumKeys(a.Enums))
+				// 		varType = strings.ReplaceAll(varType, "[]", "")
+				// 		val += splited[1] + ":= [3]" + varType + "{}\n"
+				// 		return val, nil
+				// 	}
+				// }
 				if len(splited) == 2 {
 					varType := utils.SolidityTypeToGolang(splited[0], converter.GetEnumKeys(a.Enums))
 					val += "var " + splited[1] + " " + varType + "\n"

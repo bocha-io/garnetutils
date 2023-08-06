@@ -34,7 +34,6 @@ func (a *ASTConverter) getStatementsFromBody(data []byte) (string, error) {
 	}
 
 	return statements, nil
-
 }
 
 func (a *ASTConverter) processFunctionDefinition(data []byte) (string, error) {
