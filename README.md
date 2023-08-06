@@ -43,7 +43,23 @@ The `garnetutils` binary will be located at `garnetutils/build`.
 
 ## TODOs:
 
-- Allow comments in the `mud.config.ts` file.
 - Add all the possible mud types. (Right now it only supports the types that we are using in our games).
 - Add support for MUD modules.
-- Add a solidity transpiler for the validation and prediction of the systems implemented by the user in MUD.
+- WIP: Add a solidity transpiler for the validation and prediction of the systems implemented by the user in MUD.
+
+## Alpha command:
+
+It generates helpers and predictions for your MUD contracts
+
+There are some limitations:
+
+- You can not use Conditionals in solidity, you must use If statements.
+- You can not use init an array in the same line, you need to declare it and set position by position.
+- Your functions must have unique names.
+- Your structs must be declared inside the contract definition.
+
+### Usage
+
+```sh
+garnetutils alpha -i ../eternal-legends-garnet/contracts-builder/contracts -o /tmp/garnetgenerated/
+```

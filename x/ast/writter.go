@@ -10,22 +10,6 @@ import (
 	"github.com/bocha-io/garnetutils/x/converter"
 )
 
-// // Attack file
-// attack, err := os.ReadFile(filepath.Join(input, "out", "AttackSystem.sol", "AttackSystem.json"))
-//
-//	if err != nil {
-//	    fmt.Printf("error opening the config: %s\n", err.Error())
-//	    return ""
-//	}
-//
-// // Convert to JSON
-// jsonFile := converter.MudConfigToJSON(mudConfigFile)
-// // Enums
-// enums := converter.GetEnumsFromJSON(jsonFile)
-//
-//	if output[len(output)-1] != '/' {
-//	    output += "/"
-//	}
 func ProcessSolidityFiles(basePath string, fileName string, outputFolder string, enums []converter.Enum) error {
 	path := filepath.Join(basePath, "out", fileName+".sol")
 	files, err := os.ReadDir(path)
@@ -47,7 +31,6 @@ func ProcessSolidityFiles(basePath string, fileName string, outputFolder string,
 }
 
 func ProcessSolidityFile(path string, fileName string, outputFolder string, enums []converter.Enum) error {
-	// content, err := OpenSolidityFile(path)
 	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
@@ -59,10 +42,6 @@ func ProcessSolidityFile(path string, fileName string, outputFolder string, enum
 	}
 
 	return SaveGoFile(outputFolder, fileName, generated)
-}
-
-func OpenSolidityFile(basePath string, fileName string) ([]byte, error) {
-	return os.ReadFile(filepath.Join(basePath, "out", fileName+".sol", fileName+".json"))
 }
 
 func SaveGoFile(outputFolder string, fileName string, fileContent string) error {
@@ -103,9 +82,8 @@ func ProcessAllSolidityFiles(basePath string, currentPath string, destination st
 			if file.Name()[0] == 'I' {
 				continue
 			}
-			fmt.Println(file.Name())
 			filename := strings.Split(file.Name(), ".")[0]
-			fmt.Println(filename)
+			fmt.Println("Processing: " + filename + "...")
 			if filename == "addressToEntityKey" {
 				continue
 			}
