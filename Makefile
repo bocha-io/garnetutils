@@ -1,4 +1,4 @@
-.PHONY: garnetutils
+.PHONY: garnetutils build
 
 build:
 	@go build -o ./build/garnetutils ./main.go

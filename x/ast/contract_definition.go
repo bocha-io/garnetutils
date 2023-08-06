@@ -8,12 +8,12 @@ import (
 
 const ContractDefinition = "ContractDefinition"
 
-func processContractDefinition(data []byte) (string, error) {
+func (a *Converter) processContractDefinition(data []byte) (string, error) {
 	ret := ""
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			nodeString, errProcess := processNodeType(value)
+			nodeString, errProcess := a.processNodeType(value)
 			if errProcess != nil {
 				return
 			}

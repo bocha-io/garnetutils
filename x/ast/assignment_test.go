@@ -48,9 +48,9 @@ func TestProcessAssignment(t *testing.T) {
 }
 `
 
-	expected := "enemyX += 5"
+	expected := "enemyX += int64(5)"
 
-	val, err := processAssignment([]byte(testData))
+	val, err := NewConverter().processAssignment([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

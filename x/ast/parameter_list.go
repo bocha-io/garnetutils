@@ -3,12 +3,14 @@ package ast
 import (
 	"fmt"
 
+	"github.com/bocha-io/garnetutils/x/converter"
+	"github.com/bocha-io/garnetutils/x/utils"
 	"github.com/buger/jsonparser"
 )
 
 const ParameterList = "ParameterList"
 
-func processParameterList(data []byte) (string, error) {
+func (a *Converter) processParameterList(data []byte) (string, error) {
 	parameters := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,
@@ -17,11 +19,16 @@ func processParameterList(data []byte) (string, error) {
 			if errInternal != nil {
 				return
 			}
-			typeName, errInternal := jsonparser.GetString(value, "typeName", "name")
+			typeNameObject, _, _, errInternal := jsonparser.Get(value, "typeName")
 			if errInternal != nil {
 				return
 			}
-			parameters = append(parameters, fmt.Sprintf("%s %s", name, typeName))
+			typeName, errInternal := a.processNodeType(typeNameObject)
+			if errInternal != nil {
+				return
+			}
+
+			parameters = append(parameters, fmt.Sprintf("%s %s", name, utils.SolidityTypeToGolang(typeName, converter.GetEnumKeys(a.Enums))))
 		},
 		"parameters",
 	)

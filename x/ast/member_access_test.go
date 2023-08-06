@@ -40,7 +40,7 @@ func TestMemberAccess(t *testing.T) {
 `
 
 	expected := "Position.get"
-	val, err := processMemberAccess([]byte(testData))
+	val, err := NewConverter().processMemberAccess([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

@@ -174,9 +174,9 @@ func TestParameterList(t *testing.T) {
   "src": "848:78:123"
 }`
 
-	expected := `x int32, y int32, size int32, targetX int32, targetY int32, targetSize int32`
+	expected := "x int64, y int64, size int64, targetX int64, targetY int64, targetSize int64"
 
-	val, err := processParameterList([]byte(testData))
+	val, err := NewConverter().processParameterList([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

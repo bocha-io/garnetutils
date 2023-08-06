@@ -4,12 +4,17 @@ import "github.com/buger/jsonparser"
 
 const TupleExpression = "TupleExpression"
 
-func processTupleExpression(data []byte) (string, error) {
+func (a *Converter) processTupleExpression(data []byte) (string, error) {
 	components := []string{}
 	_, err := jsonparser.ArrayEach(
 		data,
 		func(value []byte, dataType jsonparser.ValueType, offset int, err error) {
-			val, errInternal := processNodeType(value)
+			// Ignored values in the solidity tuple does not have a node type, it's a null element
+			if string(value) == "null" {
+				components = append(components, "_")
+			}
+
+			val, errInternal := a.processNodeType(value)
 			if errInternal != nil {
 				return
 			}

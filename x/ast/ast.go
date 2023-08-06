@@ -1,9 +1,9 @@
 package ast
 
 import (
-	"fmt"
 	"strings"
 
+	"github.com/bocha-io/garnetutils/x/converter"
 	"github.com/buger/jsonparser"
 )
 
@@ -85,41 +85,62 @@ func GenerateGoImports(symbols []SymbolImport) string {
 	return ret
 }
 
-func ProcessAST(data []byte) error {
-	imports := []SymbolImport{}
+type Converter struct {
+	imports []SymbolImport
+	Enums   []converter.Enum
+}
+
+func NewConverter() *Converter {
+	return &Converter{
+		imports: []SymbolImport{},
+		Enums:   []converter.Enum{},
+	}
+}
+
+func (a *Converter) ProcessAST(data []byte) (string, error) {
 	definition := []byte{}
 	nodes, err := getNodes(data)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	ret := ""
 
 	for _, v := range nodes {
 		value, err := jsonparser.GetString(v, "nodeType")
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		switch value {
 		case importDirective:
 			importData, err := processImport(v)
 			if err != nil {
-				return err
+				return "", err
 			}
-			imports = append(imports, importData)
+			a.imports = append(a.imports, importData)
 
 		case contractDefinition:
-			a, err := processNodeType(v)
+			a, err := a.processNodeType(v)
 			if err != nil {
-				return err
+				return "", err
 			}
-			fmt.Println("----")
-			fmt.Println(a)
+			// fmt.Println("----")
+			// fmt.Println(a)
+			ret += a + "\n"
 			definition = v
+
+		// helpers files where functions are outside a contract
+		case FunctionDefinition:
+			a, err := a.processNodeType(v)
+			if err != nil {
+				return "", err
+			}
+			ret += a + "\n"
 		}
 	}
 
-	_ = imports
 	_ = definition
 
-	return nil
+	return ret, nil
 }

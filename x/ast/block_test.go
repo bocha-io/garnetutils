@@ -2,8 +2,8 @@ package ast
 
 import "testing"
 
-const expectedBlock = `bool collisionX := x + size >= targetX && targetX + targetSize >= x
-bool collisionY := y + size >= targetY && targetY + targetSize >= y
+const expectedBlock = `collisionX := x + size >= targetX && targetX + targetSize >= x
+collisionY := y + size >= targetY && targetY + targetSize >= y
 return collisionX && collisionY`
 
 func TestProcessBlock(t *testing.T) {
@@ -464,7 +464,7 @@ func TestProcessBlock(t *testing.T) {
 }
 `
 
-	val, err := processBlock([]byte(testData))
+	val, err := NewConverter().processBlock([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

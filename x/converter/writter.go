@@ -13,24 +13,29 @@ func CreateTypesString(mainStruct string) string {
 import "github.com/bocha-io/garnet/x/indexer/data"
 
 type %s struct {
-	db    *data.Database
-	world *data.World
+	db     *data.Database
+	world  *data.World
+    active bool
 }
 
-func New%s(db *data.Database) *GameState {
-	return &GameState{
-		db:    db,
-		world: db.GetDefaultWorld(),
+func New%s(db *data.Database) *%s {
+	return &%s{
+		db:     db,
+		world:  db.GetDefaultWorld(),
+        active: true,
 	}
 }
-`, mainStruct, mainStruct)
+
+var BlockchainConnection GameObject
+`, mainStruct, mainStruct, mainStruct, mainStruct)
 }
 
 func CreateGettersString(tables []Table, c Converter) string {
 	functionsString := ""
 	// Getters
 	for _, v := range tables {
-		functionsString += fmt.Sprintf("\n%s", c.MultiValueTable(v.Key, v.Values))
+		functionsString += fmt.Sprintf("\n%s", c.MultiValueTable(v.Key, v.Values, v.Singleton))
+		functionsString += fmt.Sprintf("\n%s", c.GetRows(v.Key, v.Values))
 	}
 
 	gettersFile := "package garnethelpers\n\nimport (\n"
@@ -74,6 +79,21 @@ func CreateEventsString(tables []Table, c Converter) string {
 	return strings.ReplaceAll(eventsFile, "    ", "\t")
 }
 
+func CreateHelpersString(tables []Table, enums []Enum) string {
+	helpersString := ""
+	// Events
+	for _, v := range tables {
+		helpersString += fmt.Sprintf("\n%s", CreateHelper(v.Key, v.Values, v.Singleton, enums))
+	}
+
+	eventsFile := "package garnethelpers\n\nimport (\n\t\"strings\"\n\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)\n\n"
+	eventsFile += CreateHelperStruct()
+
+	eventsFile += helpersString
+
+	return strings.ReplaceAll(eventsFile, "    ", "\t")
+}
+
 func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	if path == "" {
 		path = "/Users/hanchon/devel/bocha-io/garnetutils/x/garnethelpers/"
@@ -94,6 +114,8 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	jsonFile := MudConfigToJSON(mudConfig)
 	// Tables
 	tables := GetTablesFromJSON(jsonFile)
+	// Enums
+	enums := GetEnumsFromJSON(jsonFile)
 
 	c := Converter{mainStruct: mainStruct}
 
@@ -104,6 +126,28 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 
 	eventsString := CreateEventsString(tables, c)
 	if err := os.WriteFile(path+"setters.go", []byte(eventsString), 0o600); err != nil {
+		return err
+	}
+
+	helpers := CreateHelpersString(tables, enums)
+	if err := os.WriteFile(path+"helpers.go", []byte(helpers), 0o600); err != nil {
+		return err
+	}
+
+	enumsString := "package garnethelpers\n\n"
+	for _, v := range enums {
+		for k, e := range v.Values {
+			if k == 0 {
+				enumsString += fmt.Sprintf("const (\n\t%s = iota\n", e)
+			} else {
+				enumsString += "\t" + e + "\n"
+			}
+			if k == len(v.Values)-1 {
+				enumsString += ")\n"
+			}
+		}
+	}
+	if err := os.WriteFile(path+"enums.go", []byte(enumsString), 0o600); err != nil {
 		return err
 	}
 

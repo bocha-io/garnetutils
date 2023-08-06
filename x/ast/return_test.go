@@ -55,7 +55,7 @@ func TestProcessReturn(t *testing.T) {
 `
 
 	expected := "return collisionX && collisionY"
-	val, err := processReturn([]byte(testData))
+	val, err := NewConverter().processReturn([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

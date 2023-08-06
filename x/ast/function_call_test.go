@@ -66,8 +66,8 @@ func TestFunctionCall_TypeConversion(t *testing.T) {
   }
   `
 
-	expected := "int32(10)"
-	val, err := processFunctionCall([]byte(testData))
+	expected := "int32(int64(10))"
+	val, err := NewConverter().processFunctionCall([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}
@@ -142,8 +142,8 @@ func TestFunctionCall_FunctionCall(t *testing.T) {
     }
 }
 `
-	expected := "Position.get(enemyID)"
-	val, err := processFunctionCall([]byte(testData))
+	expected := "p.Position.get(enemyID)"
+	val, err := NewConverter().processFunctionCall([]byte(testData))
 	if err != nil {
 		t.Error(err)
 	}

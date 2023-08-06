@@ -4,7 +4,7 @@ import "github.com/buger/jsonparser"
 
 const UnaryOperation = "UnaryOperation"
 
-func processUnaryOperation(data []byte) (string, error) {
+func (a *Converter) processUnaryOperation(data []byte) (string, error) {
 	operator, err := jsonparser.GetString(data, "operator")
 	if err != nil {
 		return "", err
@@ -14,7 +14,7 @@ func processUnaryOperation(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	subExpression, err := processNodeType(subExpressionObject)
+	subExpression, err := a.processNodeType(subExpressionObject)
 	if err != nil {
 		return "", err
 	}
