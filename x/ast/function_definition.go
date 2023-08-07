@@ -45,7 +45,7 @@ func (a *Converter) processFunctionDefinition(data []byte) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	functionHeader := "func " + "(p " + converter.PredictionObject + ") " + functionName
+	functionHeader := "func " + "(p *" + converter.PredictionObject + ") " + functionName
 
 	// Parameters
 	parameters, _, _, err := jsonparser.Get(data, "parameters")

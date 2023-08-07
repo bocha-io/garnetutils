@@ -19,7 +19,7 @@ func CreateProjectileEvent(ID string, spawned bool, x int64, y int64, game strin
             {Key: "spawned", Data: data.BoolField{Data: spawned}},
             {Key: "x", Data: data.UintField{Data: *big.NewInt(x)}},
             {Key: "y", Data: data.UintField{Data: *big.NewInt(y)}},
-            {Key: "game", Data: data.NewBytesField(game)},
+            {Key: "game", Data: data.NewBytesField(BytesEventFromString(game))},
         },
     }
 }

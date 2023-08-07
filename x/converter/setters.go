@@ -38,7 +38,7 @@ func Create%sEvent(ID string, %s) data.MudEvent {
 		dataString := fmt.Sprintf(`data.UintField{Data: *big.NewInt(%s)}`, v.Key)
 		switch v.Type {
 		case Bytes32Type:
-			dataString = fmt.Sprintf(`data.NewBytesField(%s)`, v.Key)
+			dataString = fmt.Sprintf(`data.NewBytesField(BytesEventFromString(%s))`, v.Key)
 		case BoolType:
 			dataString = fmt.Sprintf(`data.BoolField{Data: %s}`, v.Key)
 		}

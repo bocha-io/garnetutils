@@ -11,14 +11,22 @@ const PredictionObject = "Prediction"
 
 func CreateHelperStruct() string {
 	return fmt.Sprintf(`type %s struct {
-    events []data.MudEvent
+    Events               []data.MudEvent
+    blockchainConnection %s
+
+}
+
+func New%s(db *data.Database) *%s {
+	return &%s{
+        Events:                []data.MudEvent{},
+		blockchainConnection:  *New%s(db),
+	}
 }
 
 func (%s) addressToEntityKey(address string) string{
         return strings.Replace(address, "0x", "0x000000000000000000000000", 1)
 }
-`, PredictionObject, PredictionObject)
-	// TODO: add NewPredictionObject function
+`, PredictionObject, "GameObject", PredictionObject, PredictionObject, PredictionObject, "GameObject", PredictionObject)
 }
 
 func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum) string {
@@ -41,11 +49,11 @@ func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum)
 		key = ""
 	}
 
-	ret += fmt.Sprintf(`func (%s) %sGet(%s) %s {
-    if !BlockchainConnection.active {
+	ret += fmt.Sprintf(`func (p *%s) %sGet(%s) %s {
+    if !p.blockchainConnection.active {
         panic("game object is not active")
     }
-    %s, err := BlockchainConnection.get%s(%s)
+    %s, err := p.blockchainConnection.get%s(%s)
     if err != nil {
         panic("value not found")
     }
@@ -66,23 +74,23 @@ func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum)
 	}
 
 	ret += fmt.Sprintf(`
-func (p %s) %sSet(ID string, %s) {
-    p.events = append(p.events, Create%sEvent(ID, %s))
+func (p *%s) %sSet(ID string, %s) {
+    p.Events = append(p.Events, Create%sEvent(ID, %s))
 }
 `, PredictionObject, tableName, params, tableName, args)
 
 	ret += fmt.Sprintf(`
-func (p %s) %sDeleteRecord(ID string) {
-    p.events = append(p.events, Delete%sEvent(ID))
+func (p *%s) %sDeleteRecord(ID string) {
+    p.Events = append(p.Events, Delete%sEvent(ID))
 }
 `, PredictionObject, tableName, tableName)
 
 	ret += fmt.Sprintf(`
-func (p %s) %sKeys(%s) []string {
-    if !BlockchainConnection.active {
+func (p *%s) %sKeys(%s) []string {
+    if !p.blockchainConnection.active {
         panic("game object is not active")
     }
-    return BlockchainConnection.getRows%s(%s)
+    return p.blockchainConnection.getRows%s(%s)
 }
 `, PredictionObject, tableName, keysArgs, tableName, args)
 
