@@ -25,8 +25,6 @@ func New%s(db *data.Database) *%s {
         active: true,
 	}
 }
-
-var BlockchainConnection GameObject
 `, mainStruct, mainStruct, mainStruct, mainStruct)
 }
 
@@ -71,8 +69,18 @@ func CreateEventsString(tables []Table, c Converter) string {
 	if strings.Contains(eventsString, "big.") {
 		eventsFile += "\t\"math/big\"\n"
 	}
-
+	eventsFile += "\t\"github.com/ethereum/go-ethereum/common/hexutil\"\n"
 	eventsFile += "\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)"
+
+	eventsFile += `
+func BytesEventFromString(val string) []byte{
+    ret, err := hexutil.Decode(val)
+    if err != nil {
+        panic(err.Error())
+    }
+    return ret
+}
+`
 
 	eventsFile += eventsString
 
