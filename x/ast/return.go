@@ -5,7 +5,11 @@ import "github.com/buger/jsonparser"
 const Return = "Return"
 
 func (a *Converter) processReturn(data []byte) (string, error) {
-	expression, _, _, err := jsonparser.Get(data, "expression")
+	expression, status, _, err := jsonparser.Get(data, "expression")
+	if status == jsonparser.NotExist {
+		return "return", nil
+	}
+
 	if err != nil {
 		return "", err
 	}
