@@ -57,6 +57,7 @@ There are some limitations:
 - You can not use init an array in the same line, you need to declare it and set position by position.
 - Your functions must have unique names.
 - Your structs must be declared inside the contract definition.
+- The first character of every function that you want to optimistically predict must be uppercased.
 
 ### Usage
 

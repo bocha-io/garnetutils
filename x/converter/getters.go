@@ -9,13 +9,13 @@ type Converter struct {
 }
 
 func (c Converter) SingleValueString(tableName string) string {
-	return fmt.Sprintf(`func (g *%s) get%s(rowID string) (data.Field, string, error) {
+	return fmt.Sprintf(`func (g *%s) Get%s(rowID string) (data.Field, string, error) {
 	return data.GetRowFromIDUsingString(g.db, g.world, rowID, "%s")
 }`, c.mainStruct, tableName, tableName)
 }
 
 func (c Converter) SingleValueInt(tableName string) string {
-	return fmt.Sprintf(`func (g *%s) get%s(key string) (int64, error) {
+	return fmt.Sprintf(`func (g *%s) Get%s(key string) (int64, error) {
 	return data.GetInt64UsingString(g.db, g.world, key, "%s")
 }`, c.mainStruct, tableName, tableName)
 }
@@ -60,34 +60,8 @@ func processFieldsForGetter(fields []Field) (string, string, []string) {
 	return errorReturn, returnValues, goFields
 }
 
-func (c Converter) MultiValueTable(tableName string, fields []Field, singleton bool) string {
-	errorReturn, returnValues, goFields := processFieldsForGetter(fields)
-	args := "(key string)"
-	key := ""
-	if singleton {
-		args = "()"
-		key = "\n    key := \"\""
-	}
-
-	firstLine := fmt.Sprintf(
-		`func (g *%s) get%s%s %s {%s`,
-		c.mainStruct,
-		tableName,
-		args,
-		returnValues,
-		key,
-	)
-	getValues := fmt.Sprintf(
-		`    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
-    if err != nil {
-        return %s, err
-    }`,
-		tableName,
-		errorReturn,
-	)
-
-	checkLenght := fmt.Sprintf(`
-    if len(fields) != %d {
+func (c Converter) createProcessFieldFunction(tableName string, returnValues string, fields []Field, errorReturn string, goFields []string) string {
+	checkLenght := fmt.Sprintf(`if len(fields) != %d {
         return %s, fmt.Errorf("invalid amount of fields")
     }`,
 		len(fields), errorReturn)
@@ -123,13 +97,49 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 	}
 	validReturn = fmt.Sprintf("    return %s, nil\n}", validReturn)
 
+	return fmt.Sprintf(`func (g *%s) ProcessFields%s(fields []data.Field) %s {
+%s
+%s
+%s
+`, c.mainStruct, tableName, returnValues, checkLenght, getters, validReturn)
+}
+
+func (c Converter) MultiValueTable(tableName string, fields []Field, singleton bool) string {
+	errorReturn, returnValues, goFields := processFieldsForGetter(fields)
+	args := "(key string)"
+	key := ""
+	if singleton {
+		args = "()"
+		key = "\n    key := \"\""
+	}
+
+	processFunction := c.createProcessFieldFunction(tableName, returnValues, fields, errorReturn, goFields)
+
+	firstLine := fmt.Sprintf(
+		`func (g *%s) Get%s%s %s {%s`,
+		c.mainStruct,
+		tableName,
+		args,
+		returnValues,
+		key,
+	)
+	getValues := fmt.Sprintf(
+		`    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
+    if err != nil {
+        return %s, err
+    }`,
+		tableName,
+		errorReturn,
+	)
+
 	return fmt.Sprintf(`
 %s
 %s
 %s
-%s
-%s`,
-		firstLine, getValues, checkLenght, getters, validReturn)
+	return g.ProcessFields%s(fields)
+}
+`,
+		processFunction, firstLine, getValues, tableName)
 }
 
 func (c Converter) GetRows(tableName string, fields []Field) string {
@@ -143,10 +153,20 @@ func (c Converter) GetRows(tableName string, fields []Field) string {
 		}
 	}
 
-	firstLine := fmt.Sprintf(
-		`func (g %s) getRows%s(%s) []string{
+	zeroLine := fmt.Sprintf(
+		`func (g %s) GetAllRows%s() map[string][]data.Field{
 	table := g.world.GetTableByName("%s")
-	rows := g.db.GetRows(table)
+	return g.db.GetRows(table)
+}
+`,
+		c.mainStruct,
+		tableName,
+		tableName,
+	)
+
+	firstLine := fmt.Sprintf(
+		`func (g %s) GetRows%s(%s) []string{
+    rows := g.GetAllRows%s()
  	for k, fields := range rows {`,
 		c.mainStruct,
 		tableName,
@@ -193,8 +213,9 @@ func (c Converter) GetRows(tableName string, fields []Field) string {
 %s
 %s
 %s
+%s
     return []string{}
 }
 `,
-		firstLine, checkLenght, getters)
+		zeroLine, firstLine, checkLenght, getters)
 }
