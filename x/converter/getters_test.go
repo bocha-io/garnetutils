@@ -7,7 +7,7 @@ import (
 func TestString(t *testing.T) {
 	c := Converter{mainStruct: "GameState"}
 	generated := c.SingleValueString("PlayerTwo")
-	value := `func (g *GameState) getPlayerTwo(rowID string) (data.Field, string, error) {
+	value := `func (g *GameState) GetPlayerTwo(rowID string) (data.Field, string, error) {
 	return data.GetRowFromIDUsingString(g.db, g.world, rowID, "PlayerTwo")
 }`
 	if generated != value {
@@ -18,7 +18,7 @@ func TestString(t *testing.T) {
 func TestInt(t *testing.T) {
 	c := Converter{mainStruct: "GameState"}
 	generated := c.SingleValueInt("Time")
-	value := `func (g *GameState) getTime(key string) (int64, error) {
+	value := `func (g *GameState) GetTime(key string) (int64, error) {
 	return data.GetInt64UsingString(g.db, g.world, key, "Time")
 }`
 	if generated != value {
@@ -35,30 +35,34 @@ func TestMultiValueTable(t *testing.T) {
 		{Key: "test4", Type: "bytes32"},
 	}, false)
 	value := `
-func (g *GameState) getProjectile(key string) (bool, int64, int64, string, error) {
-    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Projectile")
-    if err != nil {
-        return false, 0, 0, "", err
-    }
+func (g *GameState) ProcessFieldsProjectile(fields []data.Field) (bool, int64, int64, string, error) {
+if len(fields) != 4 {
+return false, 0, 0, "", fmt.Errorf("invalid amount of fields")
+}
 
-    if len(fields) != 4 {
-        return false, 0, 0, "", fmt.Errorf("invalid amount of fields")
-    }
+field0 := fields[0].Data.String() == "true"
+field1, err := strconv.ParseInt(fields[1].Data.String(), 10, 32)
+if err != nil {
+return false, 0, 0, "", err
+}
+field2, err := strconv.ParseInt(fields[2].Data.String(), 10, 32)
+if err != nil {
+return false, 0, 0, "", err
+}
+field3 := strings.ReplaceAll(fields[3].Data.String(), "\"", "")
+return field0, field1, field2, field3, nil
+}
 
-    field0 := fields[0].Data.String() == "true"
-    field1, err := strconv.ParseInt(fields[1].Data.String(), 10, 32)
-    if err != nil {
-        return false, 0, 0, "", err
-    }
-    field2, err := strconv.ParseInt(fields[2].Data.String(), 10, 32)
-    if err != nil {
-        return false, 0, 0, "", err
-    }
-    field3 := strings.ReplaceAll(fields[3].Data.String(), "\"", "")
-    return field0, field1, field2, field3, nil
-}`
+func (g *GameState) GetProjectile(key string) (bool, int64, int64, string, error) {
+fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Projectile")
+if err != nil {
+return false, 0, 0, "", err
+}
+return g.ProcessFieldsProjectile(fields)
+}
+`
 
 	if generated != value {
-		t.Fatalf("multivalue failed: %s, %s", generated, value)
+		t.Fatalf("multivalue failed\nGenerated:\n%s\nValue:\n%s", generated, value)
 	}
 }

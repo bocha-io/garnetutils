@@ -68,8 +68,8 @@ func (c Converter) createProcessFieldFunction(
 	goFields []string,
 ) string {
 	checkLenght := fmt.Sprintf(`if len(fields) != %d {
-        return %s, fmt.Errorf("invalid amount of fields")
-    }`,
+return %s, fmt.Errorf("invalid amount of fields")
+}`,
 		len(fields), errorReturn)
 
 	getters := ""
@@ -78,19 +78,19 @@ func (c Converter) createProcessFieldFunction(
 		switch v {
 		case Int64Type:
 			getters = fmt.Sprintf(`%s
-    field%d, err := strconv.ParseInt(fields[%d].Data.String(), 10, 32)
-    if err != nil {
-        return %s, err
-    }`, getters, k, k, errorReturn)
+field%d, err := strconv.ParseInt(fields[%d].Data.String(), 10, 32)
+if err != nil {
+return %s, err
+}`, getters, k, k, errorReturn)
 
 		case BoolType:
 			getters = fmt.Sprintf(`%s
-    field%d := fields[%d].Data.String() == "true"`,
+field%d := fields[%d].Data.String() == "true"`,
 				getters, k, k)
 
 		case StringType:
 			getters = fmt.Sprintf(`%s
-    field%d := strings.ReplaceAll(fields[%d].Data.String(), "\"", "")`,
+field%d := strings.ReplaceAll(fields[%d].Data.String(), "\"", "")`,
 				getters, k, k)
 		}
 
@@ -101,7 +101,7 @@ func (c Converter) createProcessFieldFunction(
 		}
 
 	}
-	validReturn = fmt.Sprintf("    return %s, nil\n}", validReturn)
+	validReturn = fmt.Sprintf("return %s, nil\n}", validReturn)
 
 	return fmt.Sprintf(`func (g *%s) ProcessFields%s(fields []data.Field) %s {
 %s
@@ -136,10 +136,10 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 		key,
 	)
 	getValues := fmt.Sprintf(
-		`    fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
-    if err != nil {
-        return %s, err
-    }`,
+		`fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "%s")
+if err != nil {
+return %s, err
+}`,
 		tableName,
 		errorReturn,
 	)
@@ -148,7 +148,7 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 %s
 %s
 %s
-	return g.ProcessFields%s(fields)
+return g.ProcessFields%s(fields)
 }
 `,
 		processFunction, firstLine, getValues, tableName)
