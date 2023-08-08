@@ -67,10 +67,10 @@ func CreateEventsString(tables []Table, c Converter) string {
 	eventsFile := "package garnethelpers\n\nimport (\n"
 
 	if strings.Contains(eventsString, "big.") {
-		eventsFile += "\t\"math/big\"\n"
+		eventsFile += "\t\"math/big\"\n\n"
 	}
 	eventsFile += "\t\"github.com/ethereum/go-ethereum/common/hexutil\"\n"
-	eventsFile += "\n\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)"
+	eventsFile += "\t\"github.com/bocha-io/garnet/x/indexer/data\"\n)"
 
 	eventsFile += `
 func BytesEventFromString(val string) []byte{
@@ -151,7 +151,7 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 				enumsString += "\t" + e + "\n"
 			}
 			if k == len(v.Values)-1 {
-				enumsString += ")\n"
+				enumsString += ")\n\n"
 			}
 		}
 	}
