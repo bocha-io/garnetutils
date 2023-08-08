@@ -60,7 +60,13 @@ func processFieldsForGetter(fields []Field) (string, string, []string) {
 	return errorReturn, returnValues, goFields
 }
 
-func (c Converter) createProcessFieldFunction(tableName string, returnValues string, fields []Field, errorReturn string, goFields []string) string {
+func (c Converter) createProcessFieldFunction(
+	tableName string,
+	returnValues string,
+	fields []Field,
+	errorReturn string,
+	goFields []string,
+) string {
 	checkLenght := fmt.Sprintf(`if len(fields) != %d {
         return %s, fmt.Errorf("invalid amount of fields")
     }`,
@@ -113,7 +119,13 @@ func (c Converter) MultiValueTable(tableName string, fields []Field, singleton b
 		key = "\n    key := \"\""
 	}
 
-	processFunction := c.createProcessFieldFunction(tableName, returnValues, fields, errorReturn, goFields)
+	processFunction := c.createProcessFieldFunction(
+		tableName,
+		returnValues,
+		fields,
+		errorReturn,
+		goFields,
+	)
 
 	firstLine := fmt.Sprintf(
 		`func (g *%s) Get%s%s %s {%s`,
