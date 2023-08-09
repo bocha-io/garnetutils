@@ -24,5 +24,9 @@ func MudConfigToJSON(mudConfig []byte) []byte {
 	commentsRegex := regexp.MustCompile("//.*")
 	temp = commentsRegex.ReplaceAllString(temp, "")
 
+	// Remove trailing comma for every array because it breaks the jsonparser.ArrayEach function
+	trailingCommaRegex := regexp.MustCompile(`,\n(\s*)]`)
+	temp = trailingCommaRegex.ReplaceAllString(temp, "\n$1]")
+
 	return []byte(temp)
 }
