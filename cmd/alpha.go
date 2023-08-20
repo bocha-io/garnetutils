@@ -59,6 +59,8 @@ var alphaCmd = &cobra.Command{
 
 		// Try to fmt the files if the user has gofmt installed
 		_, _ = exec.Command("gofmt", "-w", output).Output()
+		// Try to fix lines length
+		_, _ = exec.Command("golines", "--no-ignore-generated", "-w", output).Output()
 	},
 }
 
