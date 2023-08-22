@@ -53,10 +53,7 @@ func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum)
     if !p.blockchainConnection.active {
         panic("game object is not active")
     }
-    %s, err := p.blockchainConnection.Get%s(%s)
-    if err != nil {
-        panic("value not found")
-    }
+    %s, _ := p.blockchainConnection.Get%s(%s)
     return %s
 }
 `, PredictionObject, tableName, argsGetter, returnValues, getValues, tableName, key, getValues)

@@ -31,7 +31,7 @@ func processFieldsForGetter(fields []Field) (string, string, []string) {
 		switch v.Type {
 		case Bytes32Type:
 			goType = StringType
-			tempReturn = "\"\""
+			tempReturn = "EmptyBytes"
 		case BoolType:
 			goType = BoolType
 			tempReturn = "false"
