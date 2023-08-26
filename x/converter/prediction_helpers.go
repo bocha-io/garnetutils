@@ -12,14 +12,14 @@ const PredictionObject = "Prediction"
 func CreateHelperStruct() string {
 	return fmt.Sprintf(`type %s struct {
     Events               []data.MudEvent
-    blockchainConnection %s
+    BlockchainConnection %s
 
 }
 
 func New%s(db *data.Database) *%s {
 	return &%s{
         Events:                []data.MudEvent{},
-		blockchainConnection:  *New%s(db),
+		BlockchainConnection:  *New%s(db),
 	}
 }
 
@@ -50,10 +50,10 @@ func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum)
 	}
 
 	ret += fmt.Sprintf(`func (p *%s) %sGet(%s) %s {
-    if !p.blockchainConnection.active {
+    if !p.BlockchainConnection.active {
         panic("game object is not active")
     }
-    %s, _ := p.blockchainConnection.Get%s(%s)
+    %s, _ := p.BlockchainConnection.Get%s(%s)
     return %s
 }
 `, PredictionObject, tableName, argsGetter, returnValues, getValues, tableName, key, getValues)
@@ -84,10 +84,10 @@ func (p *%s) %sDeleterecord(ID string) {
 
 	ret += fmt.Sprintf(`
 func (p *%s) %sKeys(%s) []string {
-    if !p.blockchainConnection.active {
+    if !p.BlockchainConnection.active {
         panic("game object is not active")
     }
-    return p.blockchainConnection.GetRows%s(%s)
+    return p.BlockchainConnection.GetRows%s(%s)
 }
 `, PredictionObject, tableName, keysArgs, tableName, args)
 
