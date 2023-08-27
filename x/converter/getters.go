@@ -179,6 +179,7 @@ func (c Converter) GetRows(tableName string, fields []Field) string {
 	firstLine := fmt.Sprintf(
 		`func (g %s) GetRows%s(%s) []string{
     rows := g.GetAllRows%s()
+    ret := []string{}
  	for k, fields := range rows {`,
 		c.mainStruct,
 		tableName,
@@ -219,14 +220,14 @@ func (c Converter) GetRows(tableName string, fields []Field) string {
         }`, getters, k, k, k, k)
 		}
 	}
-	getters += ("\n        return []string{k}\n    }")
+	getters += ("\n        ret = append(ret,k)\n    }")
 
 	return fmt.Sprintf(`
 %s
 %s
 %s
 %s
-    return []string{}
+    return ret
 }
 `,
 		zeroLine, firstLine, checkLenght, getters)

@@ -142,7 +142,7 @@ func GenerateFiles(mainStruct string, mudConfig []byte, path string) error {
 	c := Converter{mainStruct: mainStruct}
 
 	gettersString := CreateGettersString(tables, c)
-	if err := os.WriteFile(path+"tables.go", []byte(gettersString), 0o600); err != nil {
+	if err := os.WriteFile(path+"getters.go", []byte(gettersString), 0o600); err != nil {
 		return err
 	}
 
