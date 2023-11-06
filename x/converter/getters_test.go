@@ -37,17 +37,17 @@ func TestMultiValueTable(t *testing.T) {
 	value := `
 func (g *GameState) ProcessFieldsProjectile(fields []data.Field) (bool, int64, int64, string, error) {
 if len(fields) != 4 {
-return false, 0, 0, "", fmt.Errorf("invalid amount of fields")
+return false, 0, 0, EmptyBytes, fmt.Errorf("invalid amount of fields")
 }
 
 field0 := fields[0].Data.String() == "true"
 field1, err := strconv.ParseInt(fields[1].Data.String(), 10, 32)
 if err != nil {
-return false, 0, 0, "", err
+return false, 0, 0, EmptyBytes, err
 }
 field2, err := strconv.ParseInt(fields[2].Data.String(), 10, 32)
 if err != nil {
-return false, 0, 0, "", err
+return false, 0, 0, EmptyBytes, err
 }
 field3 := strings.ReplaceAll(fields[3].Data.String(), "\"", "")
 return field0, field1, field2, field3, nil
@@ -56,7 +56,7 @@ return field0, field1, field2, field3, nil
 func (g *GameState) GetProjectile(key string) (bool, int64, int64, string, error) {
 fields, err := data.GetRowFieldsUsingString(g.db, g.world, key, "Projectile")
 if err != nil {
-return false, 0, 0, "", err
+return false, 0, 0, EmptyBytes, err
 }
 return g.ProcessFieldsProjectile(fields)
 }

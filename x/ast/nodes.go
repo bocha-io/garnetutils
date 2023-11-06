@@ -57,6 +57,8 @@ func (a *Converter) processNodeType(data []byte) (string, error) {
 		return a.processContinue(data)
 	case StructDefinition:
 		return a.processStructDefinition(data)
+	case Break:
+		return a.processBreak(data)
 	default:
 		panic(nodeType + " not registered")
 	}
