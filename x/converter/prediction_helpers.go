@@ -44,19 +44,36 @@ func CreateHelper(tableName string, fields []Field, sigleton bool, enums []Enum)
 
 	argsGetter := "key string"
 	key := "key"
+
+	getFromPrediction := fmt.Sprintf(`
+    var temp *data.MudEvent = nil
+	for k, v := range p.Events {
+		if v.Table == "%s" && v.Key == %s {
+			temp = &p.Events[k]
+		}
+	}
+
+	if temp != nil {
+		%s, _ := p.BlockchainConnection.ProcessFields%s(temp.Fields)
+		return %s
+	}
+    `, tableName, key, getValues, tableName, getValues)
+
 	if sigleton {
 		argsGetter = ""
 		key = ""
+		getFromPrediction = ""
 	}
 
 	ret += fmt.Sprintf(`func (p *%s) %sGet(%s) %s {
+    %s
     if !p.BlockchainConnection.active {
         panic("game object is not active")
     }
     %s, _ := p.BlockchainConnection.Get%s(%s)
     return %s
 }
-`, PredictionObject, tableName, argsGetter, returnValues, getValues, tableName, key, getValues)
+`, PredictionObject, tableName, argsGetter, returnValues, getFromPrediction, getValues, tableName, key, getValues)
 
 	params := createSettersReturnsValues(fields)
 	args := ""
@@ -81,6 +98,8 @@ func (p *%s) %sDeleterecord(ID string) {
     p.Events = append(p.Events, Delete%sEvent(ID))
 }
 `, PredictionObject, tableName, tableName)
+
+	// TODO: read keys using the prediction values
 
 	ret += fmt.Sprintf(`
 func (p *%s) %sKeys(%s) []string {
