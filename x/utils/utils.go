@@ -4,6 +4,17 @@ import (
 	"strings"
 )
 
+const (
+	Int64Type   = "int64"
+	Uint32Type  = "uint32"
+	Int32Type   = "int32"
+	Uint8Type   = "uint8"
+	AddressType = "address"
+	BoolType    = "bool"
+	StringType  = "string"
+	Bytes32Type = "bytes32"
+)
+
 func SolidityTypeToGolang(val string, enums []string) string {
 	brackets := ""
 	splitted := strings.Split(val, "]")
@@ -20,25 +31,25 @@ func SolidityTypeToGolang(val string, enums []string) string {
 
 	for _, v := range enums {
 		if val == v {
-			return "int64"
+			return Int64Type
 		}
 	}
 
 	switch val {
-	case "bytes32":
-		return brackets + "string"
-	case "bool":
-		return brackets + "bool"
-	case "int64":
-		return brackets + "int64"
-	case "uint32":
-		return brackets + "int64"
-	case "int32":
-		return brackets + "int64"
-	case "uint8":
-		return brackets + "int64"
-	case "address":
-		return brackets + "string"
+	case Bytes32Type:
+		return brackets + StringType
+	case BoolType:
+		return brackets + BoolType
+	case Int64Type:
+		return brackets + Int64Type
+	case Uint32Type:
+		return brackets + Int64Type
+	case Int32Type:
+		return brackets + Int64Type
+	case Uint8Type:
+		return brackets + Int64Type
+	case AddressType:
+		return brackets + StringType
 	default:
 		return brackets + val
 	}
